@@ -1,0 +1,182 @@
+import { useState } from 'react'
+import useStore from '../store/useStore'
+import { clearAllData, exportData } from '../utils/storage'
+
+const THEME_OPTIONS = [
+  { key: 'auto', label: '跟随系统' },
+  { key: 'dark', label: '深色' },
+  { key: 'light', label: '浅色' },
+]
+
+function EditableChipList({ items, onChange, placeholder, activeColor = 'var(--text-accent)' }) {
+  const [input, setInput] = useState('')
+  function handleAdd() {
+    const val = input.trim()
+    if (val && !items.includes(val)) { onChange([...items, val]); setInput('') }
+  }
+  function handleRemove(item) { onChange(items.filter((i) => i !== item)) }
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {items.map((item) => (
+          <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm"
+            style={{ background: 'var(--chip-bg)', color: activeColor, border: '1px solid var(--chip-border)' }}>
+            {item}
+            <button onClick={() => handleRemove(item)} className="ml-0.5 opacity-60 hover:opacity-100">&times;</button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <input type="text" value={input} onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()} placeholder={placeholder} className="input-field flex-1" />
+        <button onClick={handleAdd} className="btn-primary shrink-0 px-4">添加</button>
+      </div>
+    </div>
+  )
+}
+
+function EditableGroupedChipList({ groups, onChange, activeColor = 'var(--text-accent)' }) {
+  const [input, setInput] = useState('')
+  const [activeGroup, setActiveGroup] = useState(groups[0]?.group ?? '')
+
+  function handleAdd() {
+    const val = input.trim()
+    if (!val || !activeGroup) return
+    const updated = groups.map((g) =>
+      g.group === activeGroup && !g.items.includes(val) ? { ...g, group: g.group, items: [...g.items, val] } : g
+    )
+    onChange(updated)
+    setInput('')
+  }
+
+  function handleRemove(groupName, item) {
+    onChange(groups.map((g) =>
+      g.group === groupName ? { ...g, items: g.items.filter((i) => i !== item) } : g
+    ))
+  }
+
+  return (
+    <div className="space-y-3">
+      {groups.map((g) => (
+        <div key={g.group}>
+          <span className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-tertiary)' }}>{g.group}</span>
+          <div className="flex flex-wrap gap-2">
+            {g.items.map((item) => (
+              <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm"
+                style={{ background: 'var(--chip-bg)', color: activeColor, border: '1px solid var(--chip-border)' }}>
+                {item}
+                <button onClick={() => handleRemove(g.group, item)} className="ml-0.5 opacity-60 hover:opacity-100">&times;</button>
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div className="flex gap-2">
+        <select value={activeGroup} onChange={(e) => setActiveGroup(e.target.value)} className="input-field w-20 shrink-0 text-sm">
+          {groups.map((g) => <option key={g.group} value={g.group}>{g.group}</option>)}
+        </select>
+        <input type="text" value={input} onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()} placeholder="添加新的力量动作" className="input-field flex-1" />
+        <button onClick={handleAdd} className="btn-primary shrink-0 px-4">添加</button>
+      </div>
+    </div>
+  )
+}
+
+export default function Settings() {
+  const settings = useStore((s) => s.settings)
+  const updateSettings = useStore((s) => s.updateSettings)
+  const showToast = useStore((s) => s.showToast)
+  const themeMode = useStore((s) => s.themeMode)
+  const setThemeMode = useStore((s) => s.setThemeMode)
+
+  const [exerciseGoal, setExerciseGoal] = useState(String(settings.dailyExerciseGoal))
+
+  function saveGoal() {
+    const ex = parseInt(exerciseGoal, 10)
+    if (ex > 0) updateSettings({ dailyExerciseGoal: ex })
+    showToast('设置已保存')
+  }
+
+  function handleExport() {
+    const data = exportData()
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url
+    a.download = `fitlog-export-${new Date().toISOString().slice(0, 10)}.json`
+    a.click(); URL.revokeObjectURL(url)
+    showToast('数据已导出')
+  }
+
+  function handleClearAll() {
+    if (window.confirm('确定要清除所有数据吗？此操作不可恢复。'))
+      if (window.confirm('再次确认：真的要清除所有数据吗？'))
+        { clearAllData(); window.location.reload() }
+  }
+
+  return (
+    <div className="px-4 pt-12 safe-top pb-8">
+      <h1 className="text-2xl font-bold mb-6">设置</h1>
+
+      {/* Theme */}
+      <div className="glass p-5 mb-4 animate-slide-up">
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>外观模式</h2>
+        <div className="flex rounded-xl overflow-hidden" style={{ background: 'var(--glass-input)', border: '1px solid var(--glass-border-light)' }}>
+          {THEME_OPTIONS.map((opt) => (
+            <button key={opt.key} onClick={() => setThemeMode(opt.key)}
+              className="flex-1 py-2.5 text-sm font-medium transition-all duration-200"
+              style={themeMode === opt.key
+                ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff' }
+                : { color: 'var(--text-secondary)' }
+              }>{opt.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Exercise Goal */}
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>目标设定</h2>
+        <div>
+          <label className="text-sm mb-1 block" style={{ color: 'var(--text-tertiary)' }}>每日运动目标 (分钟)</label>
+          <input type="number" inputMode="numeric" value={exerciseGoal}
+            onChange={(e) => setExerciseGoal(e.target.value)} className="input-field" />
+        </div>
+        <button onClick={saveGoal} className="btn-primary w-full mt-3">保存目标</button>
+      </div>
+
+      {/* Common Foods */}
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用食物</h2>
+        <EditableChipList items={settings.commonFoods}
+          onChange={(v) => updateSettings({ commonFoods: v })} placeholder="添加新的常用食物"
+          activeColor="var(--text-yellow)" />
+      </div>
+
+      {/* Common Strength */}
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用力量动作</h2>
+        <EditableGroupedChipList groups={settings.commonStrength ?? []}
+          onChange={(v) => updateSettings({ commonStrength: v })}
+          activeColor="var(--text-accent)" />
+      </div>
+
+      {/* Common Cardio */}
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用有氧运动</h2>
+        <EditableChipList items={settings.commonCardio ?? []}
+          onChange={(v) => updateSettings({ commonCardio: v })} placeholder="添加新的有氧运动"
+          activeColor="var(--text-green)" />
+      </div>
+
+      {/* Data */}
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>数据管理</h2>
+        <div className="space-y-2">
+          <button onClick={handleExport} className="btn-secondary w-full">导出数据 (JSON)</button>
+          <button onClick={handleClearAll} className="btn-danger w-full">清除所有数据</button>
+        </div>
+      </div>
+    </div>
+  )
+}
