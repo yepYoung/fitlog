@@ -1,0 +1,73 @@
+export interface FoodRecord {
+  id: string
+  type: 'food'
+  date: string
+  time: string
+  category: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+  name: string
+  note: string | null
+  photoId: string | null
+  /** @deprecated Use photoId instead */
+  photo?: string | null
+  createdAt: string
+}
+
+export interface StrengthSet {
+  weight: number
+  reps: number
+}
+
+export interface ExerciseRecord {
+  id: string
+  type: 'exercise'
+  exerciseCategory: 'strength' | 'cardio'
+  exerciseType: string
+  date: string
+  time: string
+  sets?: StrengthSet[]
+  durationMin?: number
+  cardioParams?: Record<string, number>
+  note: string | null
+  createdAt: string
+}
+
+export interface WeightRecord {
+  id: string
+  type: 'weight'
+  date: string
+  time: string
+  weight: number
+  note: string | null
+  createdAt: string
+}
+
+export type AppRecord = FoodRecord | ExerciseRecord | WeightRecord
+
+/** Distributive Omit that preserves union members */
+export type NewRecord = {
+  [K in AppRecord['type']]: Omit<Extract<AppRecord, { type: K }>, 'id' | 'createdAt'>
+}[AppRecord['type']]
+
+export interface StrengthGroup {
+  group: string
+  items: string[]
+}
+
+export interface Settings {
+  dailyExerciseGoal: number
+  commonFoods: string[]
+  commonStrength: StrengthGroup[]
+  commonCardio: string[]
+}
+
+export interface CardioParamDef {
+  key: string
+  label: string
+  unit: string
+}
+
+export interface MealType {
+  key: string
+  label: string
+  icon: string
+}

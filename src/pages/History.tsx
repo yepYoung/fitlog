@@ -3,8 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { formatDate, getMealLabel } from '../utils/constants'
 import SwipeToDelete from '../components/SwipeToDelete'
+import usePhotoURL from '../hooks/usePhotoURL'
+import type { AppRecord, ExerciseRecord } from '../types'
 
-function Calendar({ year, month, datesWithRecords, selectedDate, onSelectDate }) {
+interface CalendarProps {
+  year: number
+  month: number
+  datesWithRecords: Set<string>
+  selectedDate: string
+  onSelectDate: (date: string) => void
+}
+
+function Calendar({ year, month, datesWithRecords, selectedDate, onSelectDate }: CalendarProps) {
   const firstDay = new Date(year, month, 1).getDay()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const today = formatDate(new Date())
@@ -16,7 +26,7 @@ function Calendar({ year, month, datesWithRecords, selectedDate, onSelectDate })
     <div>
       <div className="grid grid-cols-7 mb-2">
         {['日', '一', '二', '三', '四', '五', '六'].map((w) => (
-          <div key={w} className="text-center text-xs py-1" style={{ color: 'var(--text-tertiary)' }}>{w}</div>
+          <div key={w} className="text-center text-xs py-1 text-theme-tertiary">{w}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -44,9 +54,11 @@ function Calendar({ year, month, datesWithRecords, selectedDate, onSelectDate })
   )
 }
 
-function formatExDetail(r) {
+function formatExDetail(r: ExerciseRecord) {
   if (r.exerciseCategory === 'strength' && r.sets) {
-    return `${r.sets.length}组 · ${r.sets.map((s) => `${s.weight}kg×${s.reps}`).join(', ')}`
+    const parts = [`${r.sets.length}组 · ${r.sets.map((s) => `${s.weight}kg×${s.reps}`).join(', ')}`]
+    if (r.durationMin) parts.push(`${r.durationMin}分钟`)
+    return parts.join(' · ')
   }
   if (r.durationMin) {
     const p = r.cardioParams || {}
@@ -56,6 +68,40 @@ function formatExDetail(r) {
     return parts.join(' · ')
   }
   return ''
+}
+
+interface HistoryItemProps {
+  record: AppRecord
+  onEdit: () => void
+  onDelete: () => void
+}
+
+function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
+  const isFood = record.type === 'food'
+  const isExercise = record.type === 'exercise'
+  const photoURL = usePhotoURL(isFood ? (record.photoId ?? record.photo) : null)
+  const exRecord = isExercise ? record as ExerciseRecord : null
+  return (
+    <SwipeToDelete onDelete={onDelete}>
+      <button onClick={onEdit}
+        className="w-full text-left p-3 flex items-center gap-3 bg-item">
+        {isFood && photoURL
+          ? <img src={photoURL} alt="" className="w-9 h-9 rounded-lg object-cover" />
+          : <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
+              style={{ background: isFood ? 'var(--food-icon-bg)' : 'var(--exercise-icon-bg)' }}>
+              {isFood ? '🍽️' : exRecord?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
+            </div>}
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-medium truncate block">{isFood ? record.name : exRecord?.exerciseType}</span>
+          <span className="text-xs truncate block text-theme-tertiary">
+            {isFood
+              ? `${record.time} · ${getMealLabel(record.category)}${record.note ? ` · ${record.note}` : ''}`
+              : exRecord ? formatExDetail(exRecord) : ''}
+          </span>
+        </div>
+      </button>
+    </SwipeToDelete>
+  )
 }
 
 export default function History() {
@@ -68,17 +114,17 @@ export default function History() {
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
 
   const datesWithRecords = useMemo(() => {
-    const dates = new Set()
+    const dates = new Set<string>()
     records.forEach((r) => dates.add(r.date))
     return dates
   }, [records])
 
   const selectedRecords = useMemo(() => {
     return records.filter((r) => r.date === selectedDate)
-      .sort((a, b) => (a.time && b.time) ? a.time.localeCompare(b.time) : new Date(a.createdAt) - new Date(b.createdAt))
+      .sort((a, b) => (a.time && b.time) ? a.time.localeCompare(b.time) : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
   }, [records, selectedDate])
 
-  function goMonth(delta) {
+  function goMonth(delta: number) {
     let m = currentMonth + delta, y = currentYear
     if (m < 0) { m = 11; y-- } else if (m > 11) { m = 0; y++ }
     setCurrentMonth(m); setCurrentYear(y)
@@ -93,13 +139,13 @@ export default function History() {
 
       <div className="glass p-4 mb-4 animate-slide-up">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => goMonth(-1)} className="p-2" style={{ color: 'var(--text-tertiary)' }}>
+          <button onClick={() => goMonth(-1)} className="p-2 text-theme-tertiary">
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <span className="text-base font-semibold" style={{ color: 'var(--text-secondary)' }}>{currentYear} 年 {currentMonth + 1} 月</span>
-          <button onClick={() => goMonth(1)} className="p-2" style={{ color: 'var(--text-tertiary)' }}>
+          <span className="text-base font-semibold text-theme-secondary">{currentYear} 年 {currentMonth + 1} 月</span>
+          <button onClick={() => goMonth(1)} className="p-2 text-theme-tertiary">
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -110,35 +156,16 @@ export default function History() {
       </div>
 
       <div className="mb-4">
-        <h2 className="text-base font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>{selectedLabel} 的记录</h2>
+        <h2 className="text-base font-semibold mb-3 text-theme-secondary">{selectedLabel} 的记录</h2>
         {selectedRecords.length === 0
-          ? <p className="text-center text-sm py-6" style={{ color: 'var(--text-tertiary)' }}>当天没有记录</p>
+          ? <p className="text-center text-sm py-6 text-theme-tertiary">当天没有记录</p>
           : (
-            <div className="glass overflow-hidden divide-y" style={{ borderColor: 'var(--glass-divider)' }}>
-              {selectedRecords.map((record) => {
-                const isFood = record.type === 'food'
-                return (
-                  <SwipeToDelete key={record.id} onDelete={() => deleteRecord(record.id)}>
-                    <button onClick={() => navigate(isFood ? `/record/food?edit=${record.id}` : `/record/exercise?edit=${record.id}`)}
-                      className="w-full text-left p-3 flex items-center gap-3" style={{ background: 'var(--item-bg)' }}>
-                      {isFood && record.photo
-                        ? <img src={record.photo} alt="" className="w-9 h-9 rounded-lg object-cover" />
-                        : <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
-                            style={{ background: isFood ? 'var(--food-icon-bg)' : 'var(--exercise-icon-bg)' }}>
-                            {isFood ? '🍽️' : record.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
-                          </div>}
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium truncate block">{isFood ? record.name : record.exerciseType}</span>
-                        <span className="text-xs truncate block" style={{ color: 'var(--text-tertiary)' }}>
-                          {isFood
-                            ? `${record.time} · ${getMealLabel(record.category)}${record.note ? ` · ${record.note}` : ''}`
-                            : formatExDetail(record)}
-                        </span>
-                      </div>
-                    </button>
-                  </SwipeToDelete>
-                )
-              })}
+            <div className="glass overflow-hidden divide-y border-glass-divider">
+              {selectedRecords.map((record) => (
+                <HistoryItem key={record.id} record={record}
+                  onEdit={() => navigate(record.type === 'food' ? `/record/food?edit=${record.id}` : `/record/exercise?edit=${record.id}`)}
+                  onDelete={() => deleteRecord(record.id)} />
+              ))}
             </div>
           )}
       </div>

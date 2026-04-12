@@ -1,11 +1,17 @@
 import { useRef, useState } from 'react'
+import type React from 'react'
 
-export default function SwipeToDelete({ onDelete, children }) {
+interface SwipeToDeleteProps {
+  onDelete: () => void
+  children: React.ReactNode
+}
+
+export default function SwipeToDelete({ onDelete, children }: SwipeToDeleteProps) {
   const startX = useRef(0)
   const [offset, setOffset] = useState(0)
 
-  function handleTouchStart(e) { startX.current = e.touches[0].clientX }
-  function handleTouchMove(e) {
+  function handleTouchStart(e: React.TouchEvent) { startX.current = e.touches[0].clientX }
+  function handleTouchMove(e: React.TouchEvent) {
     const diff = startX.current - e.touches[0].clientX
     setOffset(diff > 0 ? Math.min(diff, 80) : 0)
   }

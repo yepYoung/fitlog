@@ -1,18 +1,22 @@
 import { useState, useRef, useEffect } from 'react'
 import { formatTimer } from '../utils/constants'
 
-export default function Timer({ onSave }) {
+interface TimerProps {
+  onSave: (minutes: number) => void
+}
+
+export default function Timer({ onSave }: TimerProps) {
   const [running, setRunning] = useState(false)
   const [elapsed, setElapsed] = useState(0) // seconds
-  const startRef = useRef(null) // Date.now() when started
+  const startRef = useRef<number | null>(null) // Date.now() when started
   const baseRef = useRef(0) // accumulated seconds before current run
-  const rafRef = useRef(null)
+  const rafRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (running) {
       startRef.current = Date.now()
       const tick = () => {
-        setElapsed(baseRef.current + Math.floor((Date.now() - startRef.current) / 1000))
+        setElapsed(baseRef.current + Math.floor((Date.now() - startRef.current!) / 1000))
         rafRef.current = requestAnimationFrame(tick)
       }
       rafRef.current = requestAnimationFrame(tick)

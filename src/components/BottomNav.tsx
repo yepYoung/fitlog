@@ -1,6 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import type { ReactNode } from 'react'
 
-const tabs = [
+interface NavTab {
+  key: string
+  label: string
+  icon: (color: string) => ReactNode
+}
+
+const tabs: NavTab[] = [
   {
     key: '/',
     label: '首页',
@@ -50,9 +57,10 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 safe-bottom"
       style={{
         background: 'var(--nav-bg)',
-        backdropFilter: 'blur(24px) saturate(140%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+        backdropFilter: 'blur(28px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
         borderTop: '1px solid var(--glass-border-light)',
+        boxShadow: 'inset 0 0.5px 0 var(--glass-highlight), 0 -4px 20px rgba(0,0,0,0.15)',
       }}>
       <div className="flex justify-around items-center h-14 max-w-lg mx-auto">
         {tabs.map((tab) => {

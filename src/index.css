@@ -3,68 +3,76 @@
 @tailwind utilities;
 
 @layer base {
-  /* ===== Dark theme (default) ===== */
+  /* ===== Dark theme (default) — Liquid Glass ===== */
   :root {
-    --bg-gradient-from: #0a0a1a;
-    --bg-gradient-via: #1a1a3e;
-    --bg-gradient-to: #0d1b2a;
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-bg-hover: rgba(255, 255, 255, 0.12);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-border-light: rgba(255, 255, 255, 0.08);
-    --glass-input: rgba(255, 255, 255, 0.06);
-    --glass-input-focus: rgba(255, 255, 255, 0.08);
+    --bg-gradient-from: #050510;
+    --bg-gradient-via1: #0f1535;
+    --bg-gradient-via2: #1a0a2e;
+    --bg-gradient-to: #0a1628;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-bg-hover: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-light: rgba(255, 255, 255, 0.06);
+    --glass-input: rgba(255, 255, 255, 0.04);
+    --glass-input-focus: rgba(255, 255, 255, 0.06);
     --glass-divider: rgba(255, 255, 255, 0.06);
+    --glass-inset: rgba(255, 255, 255, 0.3);
+    --glass-highlight: rgba(255, 255, 255, 0.15);
     --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: rgba(255, 255, 255, 0.5);
+    --text-secondary: rgba(255, 255, 255, 0.55);
     --text-tertiary: rgba(255, 255, 255, 0.3);
     --text-accent: #60A5FA;
     --text-green: #34D399;
     --text-yellow: #FBBF24;
     --text-red: #F87171;
-    --bar-bg: rgba(255, 255, 255, 0.1);
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
-    --nav-bg: rgba(10, 10, 26, 0.75);
-    --header-bg: rgba(10, 10, 26, 0.8);
-    --chip-bg: rgba(255, 255, 255, 0.06);
+    --bar-bg: rgba(255, 255, 255, 0.08);
+    --shadow-glass: 0 12px 40px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+    --shadow-glass-inset: inset 0 0 0 0.5px var(--glass-inset), inset 0 1px 0 var(--glass-highlight);
+    --nav-bg: rgba(5, 5, 16, 0.65);
+    --header-bg: rgba(5, 5, 16, 0.7);
+    --chip-bg: rgba(255, 255, 255, 0.05);
     --chip-border: rgba(255, 255, 255, 0.08);
     --chip-text: rgba(255, 255, 255, 0.6);
-    --delete-bg: rgba(248, 113, 113, 0.2);
-    --item-bg: rgba(255, 255, 255, 0.04);
-    --food-icon-bg: rgba(251, 191, 36, 0.12);
-    --exercise-icon-bg: rgba(52, 211, 153, 0.12);
+    --delete-bg: rgba(248, 113, 113, 0.15);
+    --item-bg: rgba(255, 255, 255, 0.02);
+    --food-icon-bg: rgba(251, 191, 36, 0.1);
+    --exercise-icon-bg: rgba(52, 211, 153, 0.1);
   }
 
   /* ===== Light theme ===== */
   [data-theme="light"] {
-    --bg-gradient-from: #F0F2F5;
-    --bg-gradient-via: #E8EBF0;
-    --bg-gradient-to: #F0F2F5;
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-bg-hover: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.8);
-    --glass-border-light: rgba(255, 255, 255, 0.5);
-    --glass-input: rgba(0, 0, 0, 0.04);
-    --glass-input-focus: rgba(0, 0, 0, 0.06);
+    --bg-gradient-from: #E8ECF4;
+    --bg-gradient-via1: #DDE3F0;
+    --bg-gradient-via2: #E4DFF0;
+    --bg-gradient-to: #E0E8F0;
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-hover: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-border-light: rgba(255, 255, 255, 0.4);
+    --glass-input: rgba(0, 0, 0, 0.03);
+    --glass-input-focus: rgba(0, 0, 0, 0.05);
     --glass-divider: rgba(0, 0, 0, 0.06);
+    --glass-inset: rgba(255, 255, 255, 0.8);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
     --text-primary: rgba(0, 0, 0, 0.88);
-    --text-secondary: rgba(0, 0, 0, 0.45);
+    --text-secondary: rgba(0, 0, 0, 0.5);
     --text-tertiary: rgba(0, 0, 0, 0.25);
     --text-accent: #2563EB;
     --text-green: #059669;
     --text-yellow: #D97706;
     --text-red: #DC2626;
-    --bar-bg: rgba(0, 0, 0, 0.06);
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.08);
-    --nav-bg: rgba(240, 242, 245, 0.8);
-    --header-bg: rgba(240, 242, 245, 0.85);
-    --chip-bg: rgba(0, 0, 0, 0.04);
-    --chip-border: rgba(0, 0, 0, 0.08);
+    --bar-bg: rgba(0, 0, 0, 0.05);
+    --shadow-glass: 0 12px 40px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-glass-inset: inset 0 0 0 0.5px var(--glass-inset), inset 0 1px 0 var(--glass-highlight);
+    --nav-bg: rgba(232, 236, 244, 0.7);
+    --header-bg: rgba(232, 236, 244, 0.75);
+    --chip-bg: rgba(0, 0, 0, 0.03);
+    --chip-border: rgba(0, 0, 0, 0.06);
     --chip-text: rgba(0, 0, 0, 0.55);
-    --delete-bg: rgba(220, 38, 38, 0.1);
-    --item-bg: rgba(0, 0, 0, 0.02);
-    --food-icon-bg: rgba(217, 119, 6, 0.1);
-    --exercise-icon-bg: rgba(5, 150, 105, 0.1);
+    --delete-bg: rgba(220, 38, 38, 0.08);
+    --item-bg: rgba(0, 0, 0, 0.015);
+    --food-icon-bg: rgba(217, 119, 6, 0.08);
+    --exercise-icon-bg: rgba(5, 150, 105, 0.08);
   }
 
   html {
@@ -75,11 +83,17 @@
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI',
       Roboto, 'Helvetica Neue', Arial, sans-serif;
     overscroll-behavior-y: none;
-    background: linear-gradient(145deg, var(--bg-gradient-from) 0%, var(--bg-gradient-via) 50%, var(--bg-gradient-to) 100%);
+    background: linear-gradient(
+      155deg,
+      var(--bg-gradient-from) 0%,
+      var(--bg-gradient-via1) 35%,
+      var(--bg-gradient-via2) 65%,
+      var(--bg-gradient-to) 100%
+    );
     background-attachment: fixed;
     min-height: 100vh;
     color: var(--text-primary);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
   }
 
   .safe-bottom {
@@ -91,65 +105,78 @@
 }
 
 @layer components {
-  /* --- Glass Card --- */
+  /* --- Liquid Glass Card --- */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    box-shadow: var(--shadow-glass);
-    transition: background 0.3s ease, border-color 0.3s ease;
+    border-radius: 22px;
+    box-shadow: var(--shadow-glass), var(--shadow-glass-inset);
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-light {
     background: var(--glass-input);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
     border: 1px solid var(--glass-border-light);
     border-radius: 16px;
+    box-shadow: var(--shadow-glass-inset);
   }
 
   /* --- Buttons --- */
   .btn-primary {
-    @apply rounded-xl px-6 py-3 font-semibold text-white transition-all duration-200;
-    background: linear-gradient(135deg, #60A5FA, #818CF8);
-    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
+    @apply rounded-[14px] px-6 py-3 font-semibold text-white transition-all duration-200;
+    background: linear-gradient(135deg, #60A5FA 0%, #818CF8 50%, #A78BFA 100%);
+    box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3),
+                0 1px 3px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   .btn-primary:active {
-    transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+    transform: scale(0.96);
+    box-shadow: 0 2px 10px rgba(96, 165, 250, 0.2),
+                0 1px 2px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .btn-secondary {
-    @apply rounded-xl px-6 py-3 font-semibold transition-all duration-200;
+    @apply rounded-[14px] px-6 py-3 font-semibold transition-all duration-200;
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
     border: 1px solid var(--glass-border);
     color: var(--text-primary);
+    box-shadow: var(--shadow-glass-inset);
   }
   .btn-secondary:active {
     background: var(--glass-bg-hover);
-    transform: scale(0.97);
+    transform: scale(0.96);
   }
 
   .btn-danger {
-    @apply rounded-xl px-6 py-3 font-semibold transition-all duration-200;
+    @apply rounded-[14px] px-6 py-3 font-semibold transition-all duration-200;
     background: var(--delete-bg);
-    border: 1px solid rgba(248, 113, 113, 0.3);
+    border: 1px solid rgba(248, 113, 113, 0.2);
     color: var(--text-red);
+    box-shadow: inset 0 0 0 0.5px rgba(248, 113, 113, 0.15),
+                inset 0 1px 0 rgba(248, 113, 113, 0.1);
   }
   .btn-danger:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
   }
 
   /* --- Input --- */
   .input-field {
-    @apply w-full h-12 px-4 rounded-xl text-base transition-all duration-200;
+    @apply w-full h-12 px-4 rounded-[14px] text-base transition-all duration-200;
     background: var(--glass-input);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border-light);
     color: var(--text-primary);
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
   }
   .input-field::placeholder {
     color: var(--text-tertiary);
@@ -157,25 +184,31 @@
   .input-field:focus {
     outline: none;
     border-color: var(--text-accent);
-    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2),
+                inset 0 0 0 0.5px rgba(96, 165, 250, 0.3);
     background: var(--glass-input-focus);
   }
 }
 
 /* --- Toast animation --- */
 .toast-enter {
-  animation: toastIn 0.3s ease-out;
+  animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 @keyframes toastIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 /* --- Slide up entrance --- */
 @keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
+  from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 .animate-slide-up {
-  animation: slideUp 0.35s ease-out both;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* --- Progress bar glow --- */
+.progress-glow {
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.3), 0 0 2px rgba(52, 211, 153, 0.2);
 }

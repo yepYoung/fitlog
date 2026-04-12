@@ -14,7 +14,7 @@ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()
   if (mode === 'auto') applyTheme('auto')
 })
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
       <App />

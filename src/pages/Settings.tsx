@@ -1,20 +1,29 @@
 import { useState } from 'react'
 import useStore from '../store/useStore'
 import { clearAllData, exportData } from '../utils/storage'
+import type { StrengthGroup } from '../types'
+import type { ThemeMode } from '../utils/theme'
 
-const THEME_OPTIONS = [
+const THEME_OPTIONS: { key: ThemeMode; label: string }[] = [
   { key: 'auto', label: '跟随系统' },
   { key: 'dark', label: '深色' },
   { key: 'light', label: '浅色' },
 ]
 
-function EditableChipList({ items, onChange, placeholder, activeColor = 'var(--text-accent)' }) {
+interface EditableChipListProps {
+  items: string[]
+  onChange: (items: string[]) => void
+  placeholder: string
+  activeColor?: string
+}
+
+function EditableChipList({ items, onChange, placeholder, activeColor = 'var(--text-accent)' }: EditableChipListProps) {
   const [input, setInput] = useState('')
   function handleAdd() {
     const val = input.trim()
     if (val && !items.includes(val)) { onChange([...items, val]); setInput('') }
   }
-  function handleRemove(item) { onChange(items.filter((i) => i !== item)) }
+  function handleRemove(item: string) { onChange(items.filter((i: string) => i !== item)) }
 
   return (
     <div>
@@ -36,23 +45,29 @@ function EditableChipList({ items, onChange, placeholder, activeColor = 'var(--t
   )
 }
 
-function EditableGroupedChipList({ groups, onChange, activeColor = 'var(--text-accent)' }) {
+interface EditableGroupedChipListProps {
+  groups: StrengthGroup[]
+  onChange: (groups: StrengthGroup[]) => void
+  activeColor?: string
+}
+
+function EditableGroupedChipList({ groups, onChange, activeColor = 'var(--text-accent)' }: EditableGroupedChipListProps) {
   const [input, setInput] = useState('')
   const [activeGroup, setActiveGroup] = useState(groups[0]?.group ?? '')
 
   function handleAdd() {
     const val = input.trim()
     if (!val || !activeGroup) return
-    const updated = groups.map((g) =>
+    const updated = groups.map((g: StrengthGroup) =>
       g.group === activeGroup && !g.items.includes(val) ? { ...g, group: g.group, items: [...g.items, val] } : g
     )
     onChange(updated)
     setInput('')
   }
 
-  function handleRemove(groupName, item) {
-    onChange(groups.map((g) =>
-      g.group === groupName ? { ...g, items: g.items.filter((i) => i !== item) } : g
+  function handleRemove(groupName: string, item: string) {
+    onChange(groups.map((g: StrengthGroup) =>
+      g.group === groupName ? { ...g, items: g.items.filter((i: string) => i !== item) } : g
     ))
   }
 
@@ -60,7 +75,7 @@ function EditableGroupedChipList({ groups, onChange, activeColor = 'var(--text-a
     <div className="space-y-3">
       {groups.map((g) => (
         <div key={g.group}>
-          <span className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-tertiary)' }}>{g.group}</span>
+          <span className="text-xs font-medium mb-1.5 block text-theme-tertiary">{g.group}</span>
           <div className="flex flex-wrap gap-2">
             {g.items.map((item) => (
               <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm"
@@ -121,7 +136,7 @@ export default function Settings() {
 
       {/* Theme */}
       <div className="glass p-5 mb-4 animate-slide-up">
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>外观模式</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">外观模式</h2>
         <div className="flex rounded-xl overflow-hidden" style={{ background: 'var(--glass-input)', border: '1px solid var(--glass-border-light)' }}>
           {THEME_OPTIONS.map((opt) => (
             <button key={opt.key} onClick={() => setThemeMode(opt.key)}
@@ -136,9 +151,9 @@ export default function Settings() {
 
       {/* Exercise Goal */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>目标设定</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">目标设定</h2>
         <div>
-          <label className="text-sm mb-1 block" style={{ color: 'var(--text-tertiary)' }}>每日运动目标 (分钟)</label>
+          <label className="text-sm mb-1 block text-theme-tertiary">每日运动目标 (分钟)</label>
           <input type="number" inputMode="numeric" value={exerciseGoal}
             onChange={(e) => setExerciseGoal(e.target.value)} className="input-field" />
         </div>
@@ -147,7 +162,7 @@ export default function Settings() {
 
       {/* Common Foods */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用食物</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用食物</h2>
         <EditableChipList items={settings.commonFoods}
           onChange={(v) => updateSettings({ commonFoods: v })} placeholder="添加新的常用食物"
           activeColor="var(--text-yellow)" />
@@ -155,7 +170,7 @@ export default function Settings() {
 
       {/* Common Strength */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用力量动作</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用力量动作</h2>
         <EditableGroupedChipList groups={settings.commonStrength ?? []}
           onChange={(v) => updateSettings({ commonStrength: v })}
           activeColor="var(--text-accent)" />
@@ -163,7 +178,7 @@ export default function Settings() {
 
       {/* Common Cardio */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>常用有氧运动</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用有氧运动</h2>
         <EditableChipList items={settings.commonCardio ?? []}
           onChange={(v) => updateSettings({ commonCardio: v })} placeholder="添加新的有氧运动"
           activeColor="var(--text-green)" />
@@ -171,7 +186,7 @@ export default function Settings() {
 
       {/* Data */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.25s' }}>
-        <h2 className="text-base font-semibold mb-4" style={{ color: 'var(--text-secondary)' }}>数据管理</h2>
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">数据管理</h2>
         <div className="space-y-2">
           <button onClick={handleExport} className="btn-secondary w-full">导出数据 (JSON)</button>
           <button onClick={handleClearAll} className="btn-danger w-full">清除所有数据</button>
