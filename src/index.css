@@ -213,6 +213,26 @@
   box-shadow: 0 0 8px rgba(52, 211, 153, 0.3), 0 0 2px rgba(52, 211, 153, 0.2);
 }
 
+/* --- Background blobs --- */
+@keyframes blobDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+@keyframes blobDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(0.95); }
+  66% { transform: translate(20px, -20px) scale(1.08); }
+}
+@keyframes blobDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(25px, 35px) scale(1.04); }
+}
+@keyframes blobDrift4 {
+  0%, 100% { transform: translate(0, 0) scale(1.02); }
+  50% { transform: translate(-30px, -25px) scale(0.96); }
+}
+
 /* --- Field error shake --- */
 .field-error {
   animation: shake 0.4s ease-in-out;
