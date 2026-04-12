@@ -5,10 +5,10 @@
 @layer base {
   /* ===== Dark theme (default) — Liquid Glass ===== */
   :root {
-    --bg-gradient-from: #050510;
-    --bg-gradient-via1: #0f1535;
-    --bg-gradient-via2: #1a0a2e;
-    --bg-gradient-to: #0a1628;
+    --bg-gradient-from: rgba(5, 5, 16, 0.55);
+    --bg-gradient-via1: rgba(15, 21, 53, 0.35);
+    --bg-gradient-via2: rgba(26, 10, 46, 0.30);
+    --bg-gradient-to: rgba(10, 22, 40, 0.55);
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-bg-hover: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.12);
@@ -41,10 +41,10 @@
 
   /* ===== Light theme ===== */
   [data-theme="light"] {
-    --bg-gradient-from: #E8ECF4;
-    --bg-gradient-via1: #DDE3F0;
-    --bg-gradient-via2: #E4DFF0;
-    --bg-gradient-to: #E0E8F0;
+    --bg-gradient-from: rgba(232, 236, 244, 0.88);
+    --bg-gradient-via1: rgba(221, 227, 240, 0.85);
+    --bg-gradient-via2: rgba(228, 223, 240, 0.82);
+    --bg-gradient-to: rgba(224, 232, 240, 0.88);
     --glass-bg: rgba(255, 255, 255, 0.55);
     --glass-bg-hover: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.7);
@@ -83,14 +83,13 @@
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI',
       Roboto, 'Helvetica Neue', Arial, sans-serif;
     overscroll-behavior-y: none;
-    background: linear-gradient(
-      155deg,
-      var(--bg-gradient-from) 0%,
-      var(--bg-gradient-via1) 35%,
-      var(--bg-gradient-via2) 65%,
-      var(--bg-gradient-to) 100%
-    );
-    background-attachment: fixed;
+    background-image:
+      linear-gradient(155deg, var(--bg-gradient-from) 0%, var(--bg-gradient-via1) 35%, var(--bg-gradient-via2) 65%, var(--bg-gradient-to) 100%),
+      url('/bg-purple.jpg');
+    background-size: cover, cover;
+    background-position: center, center;
+    background-attachment: fixed, fixed;
+    background-repeat: no-repeat, no-repeat;
     min-height: 100vh;
     color: var(--text-primary);
     transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;

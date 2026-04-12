@@ -1,32 +1,32 @@
 const blobs = [
   {
     // Purple — top left
-    color: 'rgba(139, 92, 246, 0.18)',
-    size: 380,
+    color: 'rgba(139, 92, 246, 0.10)',
+    size: 350,
     top: '5%',
     left: '-10%',
     animation: 'blobDrift1 35s ease-in-out infinite',
   },
   {
     // Blue — center right
-    color: 'rgba(59, 130, 246, 0.15)',
-    size: 320,
+    color: 'rgba(59, 130, 246, 0.08)',
+    size: 300,
     top: '35%',
     left: '60%',
     animation: 'blobDrift2 40s ease-in-out infinite',
   },
   {
     // Teal — bottom left
-    color: 'rgba(16, 185, 129, 0.13)',
-    size: 300,
+    color: 'rgba(16, 185, 129, 0.07)',
+    size: 280,
     top: '65%',
     left: '5%',
     animation: 'blobDrift3 38s ease-in-out infinite',
   },
   {
     // Pink — top right
-    color: 'rgba(236, 72, 153, 0.12)',
-    size: 260,
+    color: 'rgba(236, 72, 153, 0.06)',
+    size: 240,
     top: '10%',
     left: '70%',
     animation: 'blobDrift4 42s ease-in-out infinite',
