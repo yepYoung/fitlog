@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Toast from './components/Toast'
+import FloatingTimer from './components/FloatingTimer'
 
 const Home = lazy(() => import('./pages/Home'))
 const FoodRecord = lazy(() => import('./pages/FoodRecord'))
@@ -27,6 +28,7 @@ function MainLayout() {
 export default function App() {
   return (
     <Suspense>
+      <FloatingTimer />
       <Routes>
         <Route path="/record/food" element={<FoodRecord />} />
         <Route path="/record/exercise" element={<ExerciseRecord />} />

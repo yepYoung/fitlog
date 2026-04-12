@@ -42,7 +42,7 @@ export const CARDIO_PARAMS: Record<string, CardioParamDef[]> = {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  dailyExerciseGoal: 60, // minutes
+  dailyExerciseGoal: 90, // minutes
   commonFoods: [...DEFAULT_FOODS],
   commonStrength: STRENGTH_GROUPS.map((g) => ({ group: g.group, items: [...g.items] })),
   commonCardio: [...DEFAULT_CARDIO],

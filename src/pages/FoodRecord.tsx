@@ -29,6 +29,7 @@ export default function FoodRecord() {
   const [photoURL, setPhotoURL] = useState<string | null>(null)
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null)
   const [photoLoading, setPhotoLoading] = useState(false)
+  const [errorField, setErrorField] = useState<string | null>(null)
 
   // Load existing photo from IndexedDB on mount
   useEffect(() => {
@@ -73,7 +74,12 @@ export default function FoodRecord() {
   }
 
   async function handleSave() {
-    if (!name.trim()) { showToast('请输入食物名称'); return }
+    if (!name.trim()) {
+      showToast('请输入食物名称')
+      setErrorField('name')
+      setTimeout(() => setErrorField(null), 1000)
+      return
+    }
 
     let savedPhotoId = null
     if (photoBlob) {
@@ -138,7 +144,7 @@ export default function FoodRecord() {
         <div>
           <label className="text-sm font-medium mb-2 block text-theme-secondary">食物名称</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-            placeholder="输入食物名称" className="input-field" autoFocus={!editFood} />
+            placeholder="输入食物名称" className={`input-field ${errorField === 'name' ? 'field-error' : ''}`} autoFocus={!editFood} />
           {commonFoods.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {commonFoods.map((food) => (
@@ -155,9 +161,7 @@ export default function FoodRecord() {
 
         {/* Photo */}
         <div>
-          <label className="text-sm font-medium mb-2 block text-theme-secondary">
-            照片 <span className="text-theme-tertiary">(选填)</span>
-          </label>
+          <label className="text-sm font-light mb-2 block text-theme-secondary">照片</label>
           <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} className="hidden" />
           {photoURL ? (
             <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--glass-border-light)' }}>
@@ -195,9 +199,7 @@ export default function FoodRecord() {
 
         {/* Note */}
         <div>
-          <label className="text-sm font-medium mb-2 block text-theme-secondary">
-            备注 <span className="text-theme-tertiary">(选填)</span>
-          </label>
+          <label className="text-sm font-light mb-2 block text-theme-secondary">备注</label>
           <input type="text" value={note} onChange={(e) => setNote(e.target.value)}
             placeholder="份量、口感..." className="input-field" />
         </div>

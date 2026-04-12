@@ -6,9 +6,10 @@ interface StrengthFormProps {
   strengthGroups: StrengthGroup[]
   exerciseType: string
   onExerciseTypeChange: (type: string) => void
+  errorField?: string | null
 }
 
-export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerciseType, onExerciseTypeChange }: StrengthFormProps) {
+export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerciseType, onExerciseTypeChange, errorField }: StrengthFormProps) {
   function addSet() {
     onSetsChange([...sets, { weight: '', reps: '' }])
   }
@@ -50,7 +51,7 @@ export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerc
               <div className="relative flex-1">
                 <input type="number" inputMode="decimal" value={s.weight}
                   onChange={(e) => updateSet(i, 'weight', e.target.value)}
-                  placeholder="重量" className="input-field pr-10 text-center" />
+                  placeholder="重量" className={`input-field pr-10 text-center ${i === 0 && errorField === 'sets' ? 'field-error' : ''}`} />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-theme-tertiary">kg</span>
               </div>
               <span className="text-theme-tertiary">×</span>

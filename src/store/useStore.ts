@@ -7,6 +7,12 @@ import { getStoredTheme, setStoredTheme, applyTheme } from '../utils/theme'
 import type { ThemeMode } from '../utils/theme'
 import type { AppRecord, NewRecord, Settings } from '../types'
 
+export interface TimerState {
+  running: boolean
+  startedAt: number | null
+  base: number
+}
+
 interface StoreState {
   records: AppRecord[]
   addRecord: (record: NewRecord) => AppRecord
@@ -18,6 +24,10 @@ interface StoreState {
   setThemeMode: (mode: ThemeMode) => void
   toast: string | null
   showToast: (message: string, duration?: number) => void
+  timer: TimerState
+  startTimer: () => void
+  pauseTimer: () => void
+  resetTimer: () => void
 }
 
 const useStore = create<StoreState>((set, get) => ({
@@ -74,6 +84,20 @@ const useStore = create<StoreState>((set, get) => ({
   showToast(message: string, duration = 2000) {
     set({ toast: message })
     setTimeout(() => set({ toast: null }), duration)
+  },
+
+  timer: { running: false, startedAt: null, base: 0 },
+  startTimer() {
+    set({ timer: { running: true, startedAt: Date.now(), base: get().timer.base } })
+  },
+  pauseTimer() {
+    const t = get().timer
+    if (t.running && t.startedAt) {
+      set({ timer: { running: false, startedAt: null, base: t.base + Math.floor((Date.now() - t.startedAt) / 1000) } })
+    }
+  },
+  resetTimer() {
+    set({ timer: { running: false, startedAt: null, base: 0 } })
   },
 }))
 

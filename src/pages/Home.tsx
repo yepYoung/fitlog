@@ -143,40 +143,40 @@ function WeightCard() {
   )
 }
 
-function RecordItem({ record, onEdit, onDelete }: { record: AppRecord; onEdit: () => void; onDelete: () => void }) {
+function RecordItem({ record, onEdit, onDelete }: { record: AppRecord; onEdit: () => void; onDelete?: () => void }) {
   const isFood = record.type === 'food'
   const foodRec = isFood ? (record as FoodRecord) : null
   const exRec = record.type === 'exercise' ? (record as ExerciseRecord) : null
   const photoURL = usePhotoURL(foodRec ? (foodRec.photoId ?? foodRec.photo) : null)
-  return (
-    <SwipeToDelete onDelete={onDelete}>
-      <button onClick={onEdit} className="w-full text-left p-4 flex items-center gap-3 bg-item">
-        {isFood && photoURL
-          ? <img src={photoURL} alt="" className="w-10 h-10 rounded-xl object-cover" />
-          : <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-              style={{ background: isFood ? 'var(--food-icon-bg)' : 'var(--exercise-icon-bg)' }}>
-              {isFood ? '🍽️' : exRec?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
-            </div>}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{foodRec ? foodRec.name : exRec?.exerciseType}</span>
-            {foodRec && (
-              <span className="text-xs px-1.5 py-0.5 rounded" style={{ color: 'var(--text-secondary)', background: 'var(--chip-bg)' }}>
-                {getMealLabel(foodRec.category)}
-              </span>
-            )}
-          </div>
-          <div className="text-xs mt-0.5 truncate text-theme-tertiary">
-            {isFood ? (
-              <>{record.time}{record.note && ` · ${record.note}`}</>
-            ) : exRec ? (
-              formatExerciseDetail(exRec)
-            ) : null}
-          </div>
+  const content = (
+    <button onClick={onEdit} className="w-full text-left p-4 flex items-center gap-3 bg-item">
+      {isFood && photoURL
+        ? <img src={photoURL} alt="" className="w-10 h-10 rounded-xl object-cover" />
+        : <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+            style={{ background: isFood ? 'var(--food-icon-bg)' : 'var(--exercise-icon-bg)' }}>
+            {isFood ? '🍽️' : exRec?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
+          </div>}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate">{foodRec ? foodRec.name : exRec?.exerciseType}</span>
+          {foodRec && (
+            <span className="text-xs px-1.5 py-0.5 rounded" style={{ color: 'var(--text-secondary)', background: 'var(--chip-bg)' }}>
+              {getMealLabel(foodRec.category)}
+            </span>
+          )}
         </div>
-      </button>
-    </SwipeToDelete>
+        <div className="text-xs mt-0.5 truncate text-theme-tertiary">
+          {isFood ? (
+            <>{record.time}{record.note && ` · ${record.note}`}</>
+          ) : exRec ? (
+            formatExerciseDetail(exRec)
+          ) : null}
+        </div>
+      </div>
+    </button>
   )
+  if (onDelete) return <SwipeToDelete onDelete={onDelete}>{content}</SwipeToDelete>
+  return content
 }
 
 export default function Home() {
@@ -231,7 +231,7 @@ export default function Home() {
         ) : (
           <div className="glass overflow-hidden divide-y border-glass-divider">
             {foodRecords.map((r) => (
-              <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} onDelete={() => deleteRecord(r.id)} />
+              <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} />
             ))}
           </div>
         )}

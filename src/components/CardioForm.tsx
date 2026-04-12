@@ -12,9 +12,10 @@ interface CardioFormProps {
   showTimer: boolean
   onToggleTimer: () => void
   onTimerSave: (minutes: number) => void
+  errorField?: string | null
 }
 
-export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeChange, durationMin, onDurationChange, cardioParams, onCardioParamChange, showTimer, onToggleTimer, onTimerSave }: CardioFormProps) {
+export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeChange, durationMin, onDurationChange, cardioParams, onCardioParamChange, showTimer, onToggleTimer, onTimerSave, errorField }: CardioFormProps) {
   const paramDefs = CARDIO_PARAMS[exerciseType] || []
 
   return (
@@ -52,7 +53,7 @@ export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeC
           <div className="relative">
             <input type="number" inputMode="numeric" value={durationMin}
               onChange={(e) => onDurationChange(e.target.value)}
-              placeholder="0" className="input-field pr-14" />
+              placeholder="0" className={`input-field pr-14 ${errorField === 'duration' ? 'field-error' : ''}`} />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-theme-tertiary">分钟</span>
           </div>
         )}

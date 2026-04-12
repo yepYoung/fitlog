@@ -34,7 +34,9 @@ export default function ExerciseRecord() {
       : {}
   )
   const [note, setNote] = useState(editExercise?.note ?? '')
-  const [showTimer, setShowTimer] = useState(false)
+  const globalTimer = useStore((s) => s.timer)
+  const [showTimer, setShowTimer] = useState(globalTimer.running || globalTimer.base > 0)
+  const [errorField, setErrorField] = useState<string | null>(null)
 
   const now = new Date()
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
@@ -46,7 +48,12 @@ export default function ExerciseRecord() {
   }
 
   function handleSave() {
-    if (!exerciseType.trim()) { showToast('请选择运动类型'); return }
+    if (!exerciseType.trim()) {
+      showToast('请选择运动类型')
+      setErrorField('type')
+      setTimeout(() => setErrorField(null), 1000)
+      return
+    }
 
     const common = {
       type: 'exercise' as const,
@@ -66,14 +73,24 @@ export default function ExerciseRecord() {
           weight: s.weight ? parseFloat(String(s.weight)) : 0,
           reps: s.reps ? parseInt(String(s.reps), 10) : 0,
         }))
-      if (validSets.length === 0) { showToast('请至少记录一组'); return }
+      if (validSets.length === 0) {
+        showToast('请至少记录一组')
+        setErrorField('sets')
+        setTimeout(() => setErrorField(null), 1000)
+        return
+      }
       data = {
         ...common,
         sets: validSets,
         ...(durationMin && parseInt(durationMin, 10) > 0 ? { durationMin: parseInt(durationMin, 10) } : {}),
       }
     } else {
-      if (!durationMin || parseInt(durationMin, 10) <= 0) { showToast('请输入运动时长'); return }
+      if (!durationMin || parseInt(durationMin, 10) <= 0) {
+        showToast('请输入运动时长')
+        setErrorField('duration')
+        setTimeout(() => setErrorField(null), 1000)
+        return
+      }
       const cleanParams: Record<string, number> = {}
       Object.entries(cardioParams).forEach(([k, v]) => {
         if (v) cleanParams[k] = parseFloat(String(v))
@@ -128,20 +145,20 @@ export default function ExerciseRecord() {
           </label>
           <input type="text" value={exerciseType} onChange={(e) => setExerciseType(e.target.value)}
             placeholder={category === 'strength' ? '如：卧推、深蹲' : '如：跑步、椭圆机'}
-            className="input-field" />
+            className={`input-field ${errorField === 'type' ? 'field-error' : ''}`} />
 
           {/* Category-specific form */}
           {category === 'strength' ? (
             <StrengthForm sets={sets} onSetsChange={setSets}
               strengthGroups={strengthGroups} exerciseType={exerciseType}
-              onExerciseTypeChange={setExerciseType} />
+              onExerciseTypeChange={setExerciseType} errorField={errorField} />
           ) : (
             <CardioForm exerciseType={exerciseType} commonCardio={commonCardio}
               onExerciseTypeChange={setExerciseType}
               durationMin={durationMin} onDurationChange={setDurationMin}
               cardioParams={cardioParams} onCardioParamChange={(k, v) => setCardioParams({ ...cardioParams, [k]: v })}
               showTimer={showTimer} onToggleTimer={() => setShowTimer(!showTimer)}
-              onTimerSave={handleTimerSave} />
+              onTimerSave={handleTimerSave} errorField={errorField} />
           )}
         </div>
 
@@ -149,9 +166,7 @@ export default function ExerciseRecord() {
         {category === 'strength' && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-theme-secondary">
-                运动时长 <span className="font-normal text-theme-tertiary">(选填)</span>
-              </label>
+              <label className="text-sm font-light text-theme-secondary">运动时长</label>
               <button onClick={() => setShowTimer(!showTimer)}
                 className="text-xs px-3 py-1 rounded-full transition-all duration-200"
                 style={showTimer
@@ -176,9 +191,7 @@ export default function ExerciseRecord() {
 
         {/* Note */}
         <div>
-          <label className="text-sm font-medium mb-2 block text-theme-secondary">
-            备注 <span className="text-theme-tertiary">(选填)</span>
-          </label>
+          <label className="text-sm font-light mb-2 block text-theme-secondary">备注</label>
           <input type="text" value={note} onChange={(e) => setNote(e.target.value)}
             placeholder="感受、调整..." className="input-field" />
         </div>
