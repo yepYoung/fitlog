@@ -42,7 +42,7 @@ function SummaryCard() {
         {/* Meals */}
         <div className="flex-1">
           <span className="text-xs block mb-1 text-theme-tertiary">今日饮食</span>
-          <span className="text-3xl font-bold">{totalCalories}</span>
+          <span className="text-3xl font-bold font-display">{totalCalories}</span>
           <span className="text-sm ml-1 text-theme-tertiary">卡路里</span>
         </div>
         {/* Divider */}
@@ -51,8 +51,8 @@ function SummaryCard() {
         <div className="flex-1">
           <span className="text-xs block mb-1 text-theme-tertiary">今日运动</span>
           <div className="flex items-baseline gap-1 mb-2">
-            <span className="text-3xl font-bold">{exerciseMin}</span>
-            <span className="text-sm text-theme-tertiary">/ {dailyExerciseGoal} 分钟</span>
+            <span className="text-3xl font-bold font-display">{exerciseMin}</span>
+            <span className="text-sm text-theme-tertiary font-numeric">/ {dailyExerciseGoal} 分钟</span>
           </div>
           <div className="h-1.5 rounded-full overflow-hidden bg-bar">
             <div className="h-full rounded-full transition-all duration-700 ease-out progress-glow"
@@ -139,10 +139,10 @@ function WeightCard() {
         <div className="flex items-baseline gap-2 mt-1">
           {todayWeight != null ? (
             <>
-              <span className="text-3xl font-bold">{todayWeight}</span>
+              <span className="text-3xl font-bold font-display">{todayWeight}</span>
               <span className="text-sm text-theme-tertiary">kg</span>
               {diff != null && (
-                <span className="text-sm font-medium ml-1" style={{ color: diff > 0 ? 'var(--text-red, #f87171)' : diff < 0 ? 'var(--text-green)' : 'var(--text-tertiary)' }}>
+                <span className="text-sm font-medium ml-1 font-numeric" style={{ color: diff > 0 ? 'var(--text-red, #f87171)' : diff < 0 ? 'var(--text-green)' : 'var(--text-tertiary)' }}>
                   {diff > 0 ? `↑${diff.toFixed(1)}` : diff < 0 ? `↓${Math.abs(diff).toFixed(1)}` : '→ 持平'}
                 </span>
               )}
@@ -216,10 +216,23 @@ export default function Home() {
   }
 
   return (
-    <div className="px-4 pt-12 safe-top">
+    <>
+      <div
+        aria-hidden
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: -5,
+          backgroundImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%), url('/home-bg.png')",
+          backgroundSize: 'cover, cover',
+          backgroundPosition: 'center, center',
+          backgroundRepeat: 'no-repeat, no-repeat',
+        }}
+      />
+      <div className="px-4 pt-12 safe-top">
       <div className="mb-6 animate-slide-up">
         <div className="flex items-baseline justify-between gap-4">
-          <h1 className="text-2xl font-bold shrink-0">{getGreeting()}</h1>
+          <h1 className="text-2xl font-bold shrink-0 font-display">{getGreeting()}</h1>
           <p className="text-sm text-theme-tertiary text-right">{dateStr} {weekdays[now.getDay()]}</p>
         </div>
       </div>
@@ -267,6 +280,7 @@ export default function Home() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

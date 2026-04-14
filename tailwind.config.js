@@ -3,6 +3,12 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Bricolage Grotesque"', '"Noto Serif SC"', '"PingFang SC"', '"Hiragino Sans GB"', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', '"Noto Serif SC"', 'sans-serif'],
+        numeric: ['"Bricolage Grotesque"', 'sans-serif'],
+        serif: ['"Noto Serif SC"', '"Songti SC"', 'serif'],
+      },
       colors: {
         accent: {
           DEFAULT: '#60A5FA',

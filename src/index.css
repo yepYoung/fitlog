@@ -11,8 +11,8 @@
     --bg-gradient-to: rgba(10, 22, 40, 0.55);
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-bg-hover: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-border-light: rgba(255, 255, 255, 0.06);
+    --glass-border: transparent;
+    --glass-border-light: transparent;
     --glass-input: rgba(255, 255, 255, 0.04);
     --glass-input-focus: rgba(255, 255, 255, 0.06);
     --glass-divider: rgba(255, 255, 255, 0.06);
@@ -47,8 +47,8 @@
     --bg-gradient-to: rgba(224, 232, 240, 0.88);
     --glass-bg: rgba(255, 255, 255, 0.55);
     --glass-bg-hover: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.7);
-    --glass-border-light: rgba(255, 255, 255, 0.4);
+    --glass-border: transparent;
+    --glass-border-light: transparent;
     --glass-input: rgba(0, 0, 0, 0.03);
     --glass-input-focus: rgba(0, 0, 0, 0.05);
     --glass-divider: rgba(0, 0, 0, 0.06);
@@ -80,8 +80,9 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI',
-      Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Bricolage Grotesque', 'Noto Serif SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    font-feature-settings: 'ss01', 'ss02', 'cv11';
+    font-optical-sizing: auto;
     overscroll-behavior-y: none;
     background-image:
       linear-gradient(155deg, var(--bg-gradient-from) 0%, var(--bg-gradient-via1) 35%, var(--bg-gradient-via2) 65%, var(--bg-gradient-to) 100%),
@@ -107,8 +108,8 @@
   /* --- Liquid Glass Card --- */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     border: 1px solid var(--glass-border);
     border-radius: 22px;
     box-shadow: var(--shadow-glass), var(--shadow-glass-inset);
@@ -121,6 +122,7 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
   }
 
   .glass-media__image,
@@ -130,30 +132,33 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+    border-radius: inherit;
+    overflow: hidden;
   }
 
   .glass-media__image {
     background-size: cover;
     background-position: center;
-    transform: scale(1.03);
-    opacity: 0.55;
+    filter: blur(12px) saturate(130%);
+    transform: scale(1.08);
+    opacity: 0.4;
   }
 
   .glass-media__blur {
     background-size: cover;
     background-position: center;
-    filter: blur(22px) saturate(120%);
-    transform: scale(1.16);
-    opacity: 0.55;
+    filter: blur(44px) saturate(140%);
+    transform: scale(1.22);
+    opacity: 0.75;
   }
 
   .glass-media__veil {
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04) 38%, rgba(255, 255, 255, 0.08) 100%),
-      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.22), transparent 34%),
-      linear-gradient(180deg, rgba(19, 16, 24, 0.34), rgba(19, 16, 24, 0.16));
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
+      linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 38%, rgba(255, 255, 255, 0.12) 100%),
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.28), transparent 38%),
+      linear-gradient(180deg, rgba(19, 16, 24, 0.38), rgba(19, 16, 24, 0.22));
+    backdrop-filter: blur(36px) saturate(180%);
+    -webkit-backdrop-filter: blur(36px) saturate(180%);
   }
 
   .glass-media__shine {
@@ -176,6 +181,22 @@
     border: 1px solid var(--glass-border-light);
     border-radius: 16px;
     box-shadow: var(--shadow-glass-inset);
+  }
+
+  /* --- Typography --- */
+  .font-display {
+    font-family: 'Bricolage Grotesque', 'Noto Serif SC', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'ss01', 'ss02';
+    letter-spacing: -0.02em;
+  }
+  .font-numeric {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum', 'cv11';
+  }
+  .font-serif-cn {
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
   }
 
   /* --- Buttons --- */
