@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip } from 'recharts'
 import useStore from '../store/useStore'
 import { formatDate } from '../utils/constants'
+import PageBackground from '../components/PageBackground'
 import type { ExerciseRecord, WeightRecord } from '../types'
 
 interface StatCardProps {
@@ -88,7 +89,9 @@ export default function Statistics() {
   const axisStyle = { fontSize: 11, fill: 'var(--text-tertiary)' }
 
   return (
-    <div className="px-4 pt-12 safe-top pb-4">
+    <>
+      <PageBackground src="/bg-stats.png" />
+      <div className="px-4 pt-12 safe-top pb-4">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-bold">统计</h1>
         <div className="flex rounded-xl overflow-hidden" style={{ background: 'var(--glass-input)', border: '1px solid var(--glass-border-light)' }}>
@@ -183,6 +186,7 @@ export default function Statistics() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

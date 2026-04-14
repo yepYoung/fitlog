@@ -4,6 +4,7 @@ import useStore from '../store/useStore'
 import { formatDate, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import SwipeToDelete from '../components/SwipeToDelete'
+import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
 import type { AppRecord, ExerciseRecord, ReflectionRecord } from '../types'
 
@@ -142,7 +143,9 @@ export default function History() {
   const selectedLabel = `${sd.getMonth() + 1}月${sd.getDate()}日`
 
   return (
-    <div className="px-4 pt-12 safe-top">
+    <>
+      <PageBackground src="/bg-history.png" />
+      <div className="px-4 pt-12 safe-top">
       <h1 className="text-2xl font-bold mb-4">历史记录</h1>
 
       <div className="glass p-4 mb-4 animate-slide-up">
@@ -183,6 +186,7 @@ export default function History() {
             </div>
           )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

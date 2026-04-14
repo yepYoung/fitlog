@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import useStore from '../store/useStore'
 import { clearAllData, exportData } from '../utils/storage'
+import PageBackground from '../components/PageBackground'
 import type { StrengthGroup } from '../types'
 import type { ThemeMode } from '../utils/theme'
 
@@ -123,7 +124,9 @@ export default function Settings() {
   }
 
   return (
-    <div className="px-4 pt-12 safe-top pb-8">
+    <>
+      <PageBackground src="/bg-settings.png" />
+      <div className="px-4 pt-12 safe-top pb-8">
       <h1 className="text-2xl font-bold mb-6">设置</h1>
 
       {/* Theme */}
@@ -173,6 +176,7 @@ export default function Settings() {
           <button onClick={handleClearAll} className="btn-danger w-full">清除所有数据</button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

@@ -4,6 +4,7 @@ import useStore from '../store/useStore'
 import { getToday, getGreeting, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import SwipeToDelete from '../components/SwipeToDelete'
+import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
 import type { AppRecord, ExerciseRecord, FoodRecord, WeightRecord } from '../types'
 
@@ -217,18 +218,7 @@ export default function Home() {
 
   return (
     <>
-      <div
-        aria-hidden
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          zIndex: -5,
-          backgroundImage:
-            "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%), url('/home-bg.png')",
-          backgroundSize: 'cover, cover',
-          backgroundPosition: 'center, center',
-          backgroundRepeat: 'no-repeat, no-repeat',
-        }}
-      />
+      <PageBackground src="/home-bg.png" scrimFrom={0.25} scrimTo={0.55} />
       <div className="px-4 pt-12 safe-top">
       <div className="mb-6 animate-slide-up">
         <div className="flex items-baseline justify-between gap-4">

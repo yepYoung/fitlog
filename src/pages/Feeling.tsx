@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday } from '../utils/constants'
+import PageBackground from '../components/PageBackground'
 import type { ReflectionRecord } from '../types'
 
 function formatTime(date: Date) {
@@ -64,7 +65,9 @@ export default function Feeling() {
   const heading = editId ? '编辑感想' : '今日感想'
 
   return (
-    <div className="min-h-screen max-w-lg mx-auto">
+    <>
+      <PageBackground src="/bg-feeling.png" />
+      <div className="min-h-screen max-w-lg mx-auto">
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3 safe-top flex items-center justify-between"
         style={{ background: 'var(--header-bg)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', boxShadow: 'inset 0 -0.5px 0 var(--glass-border-light)' }}>
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-theme-secondary">
@@ -109,6 +112,7 @@ export default function Feeling() {
           {targetRecord ? '更新感想' : '保存感想'}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
