@@ -6,6 +6,7 @@ import FloatingTimer from './components/FloatingTimer'
 import BackgroundDecor from './components/BackgroundDecor'
 
 const Home = lazy(() => import('./pages/Home'))
+const Feeling = lazy(() => import('./pages/Feeling'))
 const FoodRecord = lazy(() => import('./pages/FoodRecord'))
 const ExerciseRecord = lazy(() => import('./pages/ExerciseRecord'))
 const History = lazy(() => import('./pages/History'))
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/record/exercise" element={<ExerciseRecord />} />
         <Route element={<MainLayout />}>
           <Route index element={<Home />} />
+          <Route path="feeling" element={<Feeling />} />
           <Route path="history" element={<History />} />
           <Route path="stats" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />

@@ -15,8 +15,7 @@ describe('useStore', () => {
       date: '2026-04-12',
       time: '12:00',
       category: 'lunch',
-      name: '鸡胸肉',
-      note: null,
+      items: [{ name: '鸡胸肉', note: null, calories: 220 }],
       photoId: null,
     })
 
@@ -65,14 +64,13 @@ describe('useStore', () => {
       date: '2026-04-12',
       time: '12:00',
       category: 'lunch',
-      name: '米饭',
-      note: null,
+      items: [{ name: '米饭', note: null, calories: 180 }],
       photoId: null,
     })
 
-    useStore.getState().updateRecord(record.id, { name: '糙米饭' })
+    useStore.getState().updateRecord(record.id, { items: [{ name: '糙米饭', note: '半碗', calories: 160 }] })
     const updated = useStore.getState().records[0]
-    expect(updated.type === 'food' && updated.name).toBe('糙米饭')
+    expect(updated.type === 'food' && updated.items[0]?.name).toBe('糙米饭')
   })
 
   it('deletes a record', () => {
@@ -81,8 +79,7 @@ describe('useStore', () => {
       date: '2026-04-12',
       time: '12:00',
       category: 'lunch',
-      name: '米饭',
-      note: null,
+      items: [{ name: '米饭', note: null, calories: 180 }],
       photoId: null,
     })
 
@@ -92,7 +89,7 @@ describe('useStore', () => {
   })
 
   it('updates settings', () => {
-    useStore.getState().updateSettings({ dailyExerciseGoal: 90 })
+    useStore.getState().updateSettings({ dailyExerciseGoal: 45 })
     expect(useStore.getState().settings.dailyExerciseGoal).toBe(90)
   })
 })

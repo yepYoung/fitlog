@@ -19,6 +19,16 @@ const tabs: NavTab[] = [
     ),
   },
   {
+    key: '/feeling',
+    label: '感想',
+    icon: (c) => (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={c} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 20V5.5H17" />
+        <path d="M9 11.5H15.5" />
+      </svg>
+    ),
+  },
+  {
     key: '/history',
     label: '历史',
     icon: (c) => (

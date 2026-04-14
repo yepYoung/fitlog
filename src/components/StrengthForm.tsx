@@ -1,4 +1,7 @@
 import type { StrengthGroup } from '../types'
+import type { LastStrengthSnapshot } from '../utils/exercise'
+import { formatStrengthSets, getMaxStrengthWeight } from '../utils/exercise'
+import { formatRelativeDate } from '../utils/constants'
 
 interface StrengthFormProps {
   sets: Array<{ weight: string; reps: string }>
@@ -7,9 +10,12 @@ interface StrengthFormProps {
   exerciseType: string
   onExerciseTypeChange: (type: string) => void
   errorField?: string | null
+  lastStrength?: LastStrengthSnapshot | null
+  canCopyLast?: boolean
+  onCopyLast?: () => void
 }
 
-export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerciseType, onExerciseTypeChange, errorField }: StrengthFormProps) {
+export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerciseType, onExerciseTypeChange, errorField, lastStrength, canCopyLast, onCopyLast }: StrengthFormProps) {
   function addSet() {
     onSetsChange([...sets, { weight: '', reps: '' }])
   }
@@ -40,6 +46,35 @@ export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerc
           </div>
         ))}
       </div>
+
+      {/* Last time hint */}
+      {lastStrength && (
+        <div
+          className="mt-4 p-3 rounded-2xl"
+          style={{ background: 'var(--chip-bg)', border: '1px solid var(--chip-border)' }}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-xs font-medium text-theme-secondary">
+              上次「{exerciseType}」 · {formatRelativeDate(lastStrength.date)}
+            </span>
+            <span className="text-xs text-theme-tertiary">
+              最重 {getMaxStrengthWeight(lastStrength.sets)}kg · {lastStrength.sets.length} 组
+            </span>
+          </div>
+          <div className="text-sm text-theme-primary mb-2 break-words">
+            {formatStrengthSets(lastStrength.sets)}
+          </div>
+          {canCopyLast && onCopyLast && (
+            <button
+              onClick={onCopyLast}
+              className="w-full py-2 rounded-xl text-xs font-medium transition-all duration-200"
+              style={{ background: 'rgba(96,165,250,0.18)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }}
+            >
+              复制为本次组数
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Sets */}
       <div>

@@ -59,16 +59,17 @@ const useStore = create<StoreState>((set, get) => ({
 
   settings: (() => {
     const s: Settings = loadSettings() ?? { ...DEFAULT_SETTINGS }
+    s.dailyExerciseGoal = DEFAULT_SETTINGS.dailyExerciseGoal
     // Migrate flat commonStrength array to grouped structure
     if (Array.isArray(s.commonStrength) && s.commonStrength.length > 0 && typeof s.commonStrength[0] === 'string') {
       s.commonStrength = STRENGTH_GROUPS.map((g) => ({ group: g.group, items: [...g.items] }))
-      saveSettings(s)
     }
+    saveSettings(s)
     return s
   })(),
 
   updateSettings(partial: Partial<Settings>) {
-    const updated = { ...get().settings, ...partial }
+    const updated = { ...get().settings, ...partial, dailyExerciseGoal: DEFAULT_SETTINGS.dailyExerciseGoal }
     saveSettings(updated)
     set({ settings: updated })
   },

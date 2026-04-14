@@ -117,6 +117,58 @@
                 box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .glass-media {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .glass-media__image,
+  .glass-media__blur,
+  .glass-media__veil,
+  .glass-media__shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .glass-media__image {
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.03);
+    opacity: 0.55;
+  }
+
+  .glass-media__blur {
+    background-size: cover;
+    background-position: center;
+    filter: blur(22px) saturate(120%);
+    transform: scale(1.16);
+    opacity: 0.55;
+  }
+
+  .glass-media__veil {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04) 38%, rgba(255, 255, 255, 0.08) 100%),
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.22), transparent 34%),
+      linear-gradient(180deg, rgba(19, 16, 24, 0.34), rgba(19, 16, 24, 0.16));
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  .glass-media__shine {
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.22), transparent 22%),
+      radial-gradient(circle at 78% 0%, rgba(255, 255, 255, 0.12), transparent 28%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+  }
+
+  .glass-media__content {
+    position: relative;
+    z-index: 1;
+  }
+
   .glass-light {
     background: var(--glass-input);
     backdrop-filter: blur(16px) saturate(150%);

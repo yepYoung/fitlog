@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday, STRENGTH_GROUPS } from '../utils/constants'
+import { getLastStrengthRecord } from '../utils/exercise'
 import Timer from '../components/Timer'
 import StrengthForm from '../components/StrengthForm'
 import CardioForm from '../components/CardioForm'
@@ -40,6 +41,19 @@ export default function ExerciseRecord() {
 
   const now = new Date()
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+  const lastStrength = useMemo(
+    () => (category === 'strength' ? getLastStrengthRecord(records, exerciseType, editId) : null),
+    [records, category, exerciseType, editId],
+  )
+
+  const isSetsEmpty = sets.every((s) => !s.weight.trim() && !s.reps.trim())
+
+  function copyLastStrength() {
+    if (!lastStrength) return
+    setSets(lastStrength.sets.map((s) => ({ weight: String(s.weight), reps: String(s.reps) })))
+    showToast(`已复制上次「${exerciseType}」`)
+  }
 
   function handleTimerSave(minutes: number) {
     setDurationMin(String(minutes))
@@ -151,7 +165,8 @@ export default function ExerciseRecord() {
           {category === 'strength' ? (
             <StrengthForm sets={sets} onSetsChange={setSets}
               strengthGroups={strengthGroups} exerciseType={exerciseType}
-              onExerciseTypeChange={setExerciseType} errorField={errorField} />
+              onExerciseTypeChange={setExerciseType} errorField={errorField}
+              lastStrength={lastStrength} canCopyLast={isSetsEmpty} onCopyLast={copyLastStrength} />
           ) : (
             <CardioForm exerciseType={exerciseType} commonCardio={commonCardio}
               onExerciseTypeChange={setExerciseType}

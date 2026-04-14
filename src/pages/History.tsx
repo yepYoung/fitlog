@@ -2,9 +2,10 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { formatDate, getMealLabel } from '../utils/constants'
+import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import SwipeToDelete from '../components/SwipeToDelete'
 import usePhotoURL from '../hooks/usePhotoURL'
-import type { AppRecord, ExerciseRecord } from '../types'
+import type { AppRecord, ExerciseRecord, ReflectionRecord } from '../types'
 
 interface CalendarProps {
   year: number
@@ -79,8 +80,11 @@ interface HistoryItemProps {
 function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
   const isFood = record.type === 'food'
   const isExercise = record.type === 'exercise'
+  const isReflection = record.type === 'reflection'
   const photoURL = usePhotoURL(isFood ? (record.photoId ?? record.photo) : null)
   const exRecord = isExercise ? record as ExerciseRecord : null
+  const reflectionRecord = isReflection ? record as ReflectionRecord : null
+  const reflectionPreview = reflectionRecord?.content.replace(/\s+/g, ' ').trim() ?? ''
   return (
     <SwipeToDelete onDelete={onDelete}>
       <button onClick={onEdit}
@@ -88,15 +92,19 @@ function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
         {isFood && photoURL
           ? <img src={photoURL} alt="" className="w-9 h-9 rounded-lg object-cover" />
           : <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
-              style={{ background: isFood ? 'var(--food-icon-bg)' : 'var(--exercise-icon-bg)' }}>
-              {isFood ? '🍽️' : exRecord?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
+              style={{ background: isFood ? 'var(--food-icon-bg)' : isReflection ? 'rgba(96, 165, 250, 0.1)' : 'var(--exercise-icon-bg)' }}>
+              {isFood ? '🍽️' : isReflection ? 'F' : exRecord?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
             </div>}
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium truncate block">{isFood ? record.name : exRecord?.exerciseType}</span>
+          <span className="text-sm font-medium truncate block">
+            {isFood ? getFoodDisplayName(record) : isReflection ? '今日感想' : exRecord?.exerciseType}
+          </span>
           <span className="text-xs truncate block text-theme-tertiary">
             {isFood
-              ? `${record.time} · ${getMealLabel(record.category)}${record.note ? ` · ${record.note}` : ''}`
-              : exRecord ? formatExDetail(exRecord) : ''}
+              ? `${record.time} · ${getMealLabel(record.category)} · ${getFoodItemCount(record)}项 · ${getFoodTotalCalories(record)}卡路里`
+              : isReflection
+                ? `${record.time} · ${reflectionPreview || '暂无内容'}`
+                : exRecord ? formatExDetail(exRecord) : ''}
           </span>
         </div>
       </button>
@@ -163,7 +171,13 @@ export default function History() {
             <div className="glass overflow-hidden divide-y border-glass-divider">
               {selectedRecords.map((record) => (
                 <HistoryItem key={record.id} record={record}
-                  onEdit={() => navigate(record.type === 'food' ? `/record/food?edit=${record.id}` : `/record/exercise?edit=${record.id}`)}
+                  onEdit={() => navigate(
+                    record.type === 'food'
+                      ? `/record/food?edit=${record.id}`
+                      : record.type === 'exercise'
+                        ? `/record/exercise?edit=${record.id}`
+                        : `/feeling?edit=${record.id}`
+                  )}
                   onDelete={() => deleteRecord(record.id)} />
               ))}
             </div>

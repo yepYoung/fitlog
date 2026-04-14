@@ -15,7 +15,11 @@ describe('records CRUD', () => {
     const records: AppRecord[] = [
       {
         id: '1', type: 'food', date: '2026-04-12', time: '12:00',
-        category: 'lunch', name: '米饭', note: null, photoId: null, createdAt: '2026-04-12T12:00:00Z',
+        category: 'lunch', items: [{ name: '米饭', note: null, calories: null }], photoId: null, createdAt: '2026-04-12T12:00:00Z',
+      },
+      {
+        id: '2', type: 'reflection', date: '2026-04-12', time: '22:00',
+        content: '今天训练状态不错。', createdAt: '2026-04-12T22:00:00Z',
       },
     ]
     saveRecords(records)
@@ -24,14 +28,45 @@ describe('records CRUD', () => {
 
   it('overwrites previous records', () => {
     saveRecords([
-      { id: '1', type: 'food', date: '2026-04-12', time: '12:00', category: 'lunch', name: 'A', note: null, photoId: null, createdAt: '' },
+      { id: '1', type: 'food', date: '2026-04-12', time: '12:00', category: 'lunch', items: [{ name: 'A', note: null, calories: null }], photoId: null, createdAt: '' },
     ])
     saveRecords([
-      { id: '2', type: 'food', date: '2026-04-12', time: '13:00', category: 'dinner', name: 'B', note: null, photoId: null, createdAt: '' },
+      { id: '2', type: 'food', date: '2026-04-12', time: '13:00', category: 'dinner', items: [{ name: 'B', note: null, calories: null }], photoId: null, createdAt: '' },
     ])
     const loaded = loadRecords()
     expect(loaded).toHaveLength(1)
     expect(loaded[0].id).toBe('2')
+  })
+
+  it('migrates legacy food records to items', () => {
+    localStorage.setItem('fitlog_data', JSON.stringify({
+      records: [
+        {
+          id: '1',
+          type: 'food',
+          date: '2026-04-12',
+          time: '12:00',
+          category: 'lunch',
+          name: '鸡胸肉',
+          note: '200g',
+          photo: 'data:image/png;base64,abc',
+          createdAt: '2026-04-12T12:00:00Z',
+        },
+      ],
+    }))
+
+    expect(loadRecords()).toEqual([
+      {
+        id: '1',
+        type: 'food',
+        date: '2026-04-12',
+        time: '12:00',
+        category: 'lunch',
+        items: [{ name: '鸡胸肉', note: '200g', calories: null }],
+        photoId: 'data:image/png;base64,abc',
+        createdAt: '2026-04-12T12:00:00Z',
+      },
+    ])
   })
 })
 
@@ -54,7 +89,7 @@ describe('settings CRUD', () => {
 
 describe('clearAllData', () => {
   it('removes all data', () => {
-    saveRecords([{ id: '1', type: 'food', date: '', time: '', category: 'lunch', name: 'X', note: null, photoId: null, createdAt: '' }])
+    saveRecords([{ id: '1', type: 'food', date: '', time: '', category: 'lunch', items: [{ name: 'X', note: null, calories: null }], photoId: null, createdAt: '' }])
     clearAllData()
     expect(loadRecords()).toEqual([])
     expect(loadSettings()).toBeNull()

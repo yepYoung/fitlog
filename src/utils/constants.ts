@@ -69,6 +69,15 @@ export function getToday(): string {
   return formatDate(new Date())
 }
 
+export function formatRelativeDate(date: string): string {
+  const today = getToday()
+  if (date === today) return '今天'
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  if (date === formatDate(yesterday)) return '昨天'
+  return date.slice(5).replace('-', '/')
+}
+
 export function getGreeting(): string {
   const hour: number = new Date().getHours()
   if (hour < 6) return '夜深了'

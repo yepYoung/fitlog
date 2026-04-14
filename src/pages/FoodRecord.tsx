@@ -1,11 +1,28 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import useStore from '../store/useStore'
-import { MEAL_TYPES, getAutoMealType, getToday } from '../utils/constants'
+import { MEAL_TYPES, getAutoMealType, getMealLabel, getToday, formatRelativeDate } from '../utils/constants'
+import {
+  getFoodItems,
+  getLastMealItems,
+  getFrequentFoodNames,
+  mergeSmartFoodSuggestions,
+} from '../utils/food'
 import { compressImage } from '../utils/image'
 import { saveImage, loadImage, deleteImage, blobToURL } from '../utils/imageDB'
-import type { FoodRecord as FoodRecordType } from '../types'
+import type { FoodItem, FoodRecord as FoodRecordType } from '../types'
+
+interface FoodItemDraft {
+  id: string
+  name: string
+  note: string
+  calories: string
+}
+
+function createFoodItemDraft(name = '', note = '', calories = ''): FoodItemDraft {
+  return { id: uuidv4(), name, note, calories }
+}
 
 export default function FoodRecord() {
   const navigate = useNavigate()
@@ -19,22 +36,48 @@ export default function FoodRecord() {
   const showToast = useStore((s) => s.showToast)
   const commonFoods = useStore((s) => s.settings.commonFoods)
 
-  const editRecord = editId ? records.find((r) => r.id === editId) as FoodRecordType | undefined : null
-  const editFood = editRecord ?? null
+  const editFood = editId
+    ? records.find((record): record is FoodRecordType => record.type === 'food' && record.id === editId) ?? null
+    : null
+
+  const initialItems = editFood
+    ? getFoodItems(editFood).map((item) => createFoodItemDraft(item.name, item.note ?? '', item.calories?.toString() ?? ''))
+    : [createFoodItemDraft()]
 
   const [category, setCategory] = useState<FoodRecordType['category']>(editFood?.category ?? getAutoMealType() as FoodRecordType['category'])
-  const [name, setName] = useState(editFood?.name ?? '')
-  const [note, setNote] = useState(editFood?.note ?? '')
+  const [items, setItems] = useState<FoodItemDraft[]>(initialItems.length > 0 ? initialItems : [createFoodItemDraft()])
   const [photoId, setPhotoId] = useState<string | null>(editFood?.photoId ?? editFood?.photo ?? null)
   const [photoURL, setPhotoURL] = useState<string | null>(null)
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null)
   const [photoLoading, setPhotoLoading] = useState(false)
-  const [errorField, setErrorField] = useState<string | null>(null)
+  const [errorItemId, setErrorItemId] = useState<string | null>(null)
 
-  // Load existing photo from IndexedDB on mount
+  const lastMeal = useMemo(
+    () => (editFood ? null : getLastMealItems(records, category, editId)),
+    [records, category, editFood, editId],
+  )
+
+  const isFormEmpty = items.every(
+    (item) => !item.name.trim() && !item.note.trim() && !item.calories.trim(),
+  )
+
+  const smartFoods = useMemo(
+    () => mergeSmartFoodSuggestions(getFrequentFoodNames(records, 15), commonFoods, 18),
+    [records, commonFoods],
+  )
+
+  function copyLastMeal() {
+    if (!lastMeal) return
+    setItems(
+      lastMeal.items.map((item) =>
+        createFoodItemDraft(item.name, item.note ?? '', item.calories?.toString() ?? ''),
+      ),
+    )
+    showToast(`已复制${getMealLabel(category)}`)
+  }
+
   useEffect(() => {
     if (!photoId) return
-    // If photoId is a base64 string (legacy), show it directly
     if (photoId.startsWith('data:')) {
       setPhotoURL(photoId)
       return
@@ -48,6 +91,31 @@ export default function FoodRecord() {
   const now = new Date()
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 
+  function updateFoodItem(id: string, patch: Partial<FoodItemDraft>) {
+    setItems((current) => current.map((item) => (item.id === id ? { ...item, ...patch } : item)))
+  }
+
+  function addFoodItem(name = '') {
+    setItems((current) => [...current, createFoodItemDraft(name)])
+  }
+
+  function removeFoodItem(id: string) {
+    setItems((current) => {
+      if (current.length === 1) return [createFoodItemDraft()]
+      return current.filter((item) => item.id !== id)
+    })
+  }
+
+  function quickAddFood(name: string) {
+    setItems((current) => {
+      const emptyIndex = current.findIndex((item) => !item.name.trim() && !item.note.trim() && !item.calories.trim())
+      if (emptyIndex >= 0) {
+        return current.map((item, index) => (index === emptyIndex ? { ...item, name } : item))
+      }
+      return [...current, createFoodItemDraft(name)]
+    })
+  }
+
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -58,13 +126,14 @@ export default function FoodRecord() {
       if (photoURL && !photoURL.startsWith('data:')) URL.revokeObjectURL(photoURL)
       setPhotoURL(blobToURL(blob))
       setPhotoId('pending')
-    } catch { showToast('图片处理失败') }
+    } catch {
+      showToast('图片处理失败')
+    }
     setPhotoLoading(false)
   }
 
   function handleRemovePhoto() {
     if (photoURL && !photoURL.startsWith('data:')) URL.revokeObjectURL(photoURL)
-    // If editing and had an old photo, delete it from IndexedDB
     if (editFood?.photoId && !editFood.photoId.startsWith('data:')) {
       deleteImage(editFood.photoId)
     }
@@ -74,24 +143,48 @@ export default function FoodRecord() {
   }
 
   async function handleSave() {
-    if (!name.trim()) {
-      showToast('请输入食物名称')
-      setErrorField('name')
-      setTimeout(() => setErrorField(null), 1000)
+    const normalizedItems: FoodItem[] = []
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      const name = item.name.trim()
+      const note = item.note.trim()
+      const caloriesInput = item.calories.trim()
+
+      if (!name && !note && !caloriesInput) continue
+      if (!name) {
+        showToast(`请输入第 ${i + 1} 个食物名称`)
+        setErrorItemId(item.id)
+        setTimeout(() => setErrorItemId(null), 1200)
+        return
+      }
+
+      const calories = caloriesInput ? Number(caloriesInput) : null
+      if (caloriesInput && (calories === null || Number.isNaN(calories) || calories < 0)) {
+        showToast(`请输入第 ${i + 1} 个食物的有效卡路里`)
+        setErrorItemId(item.id)
+        setTimeout(() => setErrorItemId(null), 1200)
+        return
+      }
+
+      normalizedItems.push({ name, note: note || null, calories })
+    }
+
+    if (normalizedItems.length === 0) {
+      showToast('请至少添加一个食物')
+      setErrorItemId(items[0]?.id ?? null)
+      setTimeout(() => setErrorItemId(null), 1200)
       return
     }
 
     let savedPhotoId = null
     if (photoBlob) {
-      // New photo: save blob to IndexedDB
       savedPhotoId = uuidv4()
       await saveImage(savedPhotoId, photoBlob)
-      // Delete old photo if replacing
       if (editFood?.photoId && !editFood.photoId.startsWith('data:')) {
         deleteImage(editFood.photoId)
       }
     } else if (photoId && photoId !== 'pending') {
-      // Kept existing photo
       savedPhotoId = photoId
     }
 
@@ -100,12 +193,17 @@ export default function FoodRecord() {
       date: editFood?.date ?? getToday(),
       time: editFood?.time ?? timeStr,
       category,
-      name: name.trim(),
-      note: note.trim() || null,
+      items: normalizedItems,
       photoId: savedPhotoId,
     }
-    if (editFood && editId) { updateRecord(editId, data); showToast('已更新') }
-    else { addRecord(data); showToast('已记录') }
+
+    if (editFood && editId) {
+      updateRecord(editId, data)
+      showToast('已更新')
+    } else {
+      addRecord(data)
+      showToast('已记录')
+    }
     navigate(-1)
   }
 
@@ -123,7 +221,6 @@ export default function FoodRecord() {
       </div>
 
       <div className="px-4 space-y-5 pb-10">
-        {/* Meal Type */}
         <div>
           <label className="text-sm font-medium mb-2 block text-theme-secondary">餐类</label>
           <div className="grid grid-cols-4 gap-2">
@@ -140,28 +237,103 @@ export default function FoodRecord() {
           </div>
         </div>
 
-        {/* Food Name */}
+        {lastMeal && isFormEmpty && (
+          <button
+            onClick={copyLastMeal}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-200"
+            style={{ background: 'var(--chip-bg)', border: '1px solid var(--chip-border)' }}
+          >
+            <div className="flex items-center gap-3 text-left">
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-theme-accent" stroke="currentColor" strokeWidth={2}>
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <div>
+                <div className="text-sm font-medium text-theme-primary">复制上次{getMealLabel(category)}</div>
+                <div className="text-xs text-theme-tertiary mt-0.5">
+                  {formatRelativeDate(lastMeal.date)} · {lastMeal.items.map((i) => i.name).join('、')}
+                </div>
+              </div>
+            </div>
+            <span className="text-sm text-theme-accent">复制</span>
+          </button>
+        )}
+
         <div>
-          <label className="text-sm font-medium mb-2 block text-theme-secondary">食物名称</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-            placeholder="输入食物名称" className={`input-field ${errorField === 'name' ? 'field-error' : ''}`} autoFocus={!editFood} />
-          {commonFoods.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {commonFoods.map((food) => (
-                <button key={food} onClick={() => setName(food)}
-                  className="px-3 py-1.5 rounded-full text-sm transition-all duration-200"
-                  style={name === food
-                    ? { background: 'rgba(96,165,250,0.2)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }
-                    : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
-                  }>{food}</button>
-              ))}
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <label className="text-sm font-medium block text-theme-secondary">食物列表</label>
+              <p className="text-xs mt-1 text-theme-tertiary">从上到下填写这一餐里的所有食物，一次提交。</p>
+            </div>
+            <button onClick={() => addFoodItem()} className="text-sm px-3 py-1.5 rounded-full"
+              style={{ background: 'var(--chip-bg)', color: 'var(--text-accent)', border: '1px solid var(--chip-border)' }}>
+              + 添加食物
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {items.map((item, index) => (
+              <div key={item.id} className="glass-light p-3">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-theme-secondary">食物 {index + 1}</span>
+                  <button onClick={() => removeFoodItem(item.id)} className="text-sm px-2 py-1 text-theme-tertiary">
+                    删除
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => updateFoodItem(item.id, { name: e.target.value })}
+                    placeholder="食物名称"
+                    className={`input-field ${errorItemId === item.id ? 'field-error' : ''}`}
+                    autoFocus={!editFood && index === 0}
+                  />
+                  <input
+                    type="text"
+                    value={item.note}
+                    onChange={(e) => updateFoodItem(item.id, { note: e.target.value })}
+                    placeholder="备注：份量、做法、口感..."
+                    className="input-field"
+                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      value={item.calories}
+                      onChange={(e) => updateFoodItem(item.id, { calories: e.target.value })}
+                      placeholder="卡路里"
+                      className={`input-field pr-14 ${errorItemId === item.id ? 'field-error' : ''}`}
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-theme-tertiary">kcal</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {smartFoods.length > 0 && (
+            <div className="mt-3">
+              <label className="text-xs mb-2 block text-theme-tertiary">快速添加（按使用频率排序）</label>
+              <div className="flex flex-wrap gap-2">
+                {smartFoods.map((food) => (
+                  <button
+                    key={food}
+                    onClick={() => quickAddFood(food)}
+                    className="px-3 py-1.5 rounded-full text-sm transition-all duration-200"
+                    style={{ background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }}
+                  >
+                    {food}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Photo */}
         <div>
-          <label className="text-sm font-light mb-2 block text-theme-secondary">照片</label>
+          <label className="text-sm font-light mb-2 block text-theme-secondary">餐食照片</label>
           <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoChange} className="hidden" />
           {photoURL ? (
             <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--glass-border-light)' }}>
@@ -197,15 +369,8 @@ export default function FoodRecord() {
           )}
         </div>
 
-        {/* Note */}
-        <div>
-          <label className="text-sm font-light mb-2 block text-theme-secondary">备注</label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)}
-            placeholder="份量、口感..." className="input-field" />
-        </div>
-
         <button onClick={handleSave} className="btn-primary w-full mt-4">
-          {editFood ? '更新记录' : '保存记录'}
+          {editFood ? '更新这一餐' : '保存这一餐'}
         </button>
       </div>
     </div>

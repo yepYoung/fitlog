@@ -106,14 +106,6 @@ export default function Settings() {
   const themeMode = useStore((s) => s.themeMode)
   const setThemeMode = useStore((s) => s.setThemeMode)
 
-  const [exerciseGoal, setExerciseGoal] = useState(String(settings.dailyExerciseGoal))
-
-  function saveGoal() {
-    const ex = parseInt(exerciseGoal, 10)
-    if (ex > 0) updateSettings({ dailyExerciseGoal: ex })
-    showToast('设置已保存')
-  }
-
   function handleExport() {
     const data = exportData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -149,19 +141,8 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Exercise Goal */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <h2 className="text-base font-semibold mb-4 text-theme-secondary">目标设定</h2>
-        <div>
-          <label className="text-sm mb-1 block text-theme-tertiary">每日运动目标 (分钟)</label>
-          <input type="number" inputMode="numeric" value={exerciseGoal}
-            onChange={(e) => setExerciseGoal(e.target.value)} className="input-field" />
-        </div>
-        <button onClick={saveGoal} className="btn-primary w-full mt-3">保存目标</button>
-      </div>
-
       {/* Common Foods */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用食物</h2>
         <EditableChipList items={settings.commonFoods}
           onChange={(v) => updateSettings({ commonFoods: v })} placeholder="添加新的常用食物"
@@ -169,7 +150,7 @@ export default function Settings() {
       </div>
 
       {/* Common Strength */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用力量动作</h2>
         <EditableGroupedChipList groups={settings.commonStrength ?? []}
           onChange={(v) => updateSettings({ commonStrength: v })}
@@ -177,7 +158,7 @@ export default function Settings() {
       </div>
 
       {/* Common Cardio */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用有氧运动</h2>
         <EditableChipList items={settings.commonCardio ?? []}
           onChange={(v) => updateSettings({ commonCardio: v })} placeholder="添加新的有氧运动"
@@ -185,7 +166,7 @@ export default function Settings() {
       </div>
 
       {/* Data */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">数据管理</h2>
         <div className="space-y-2">
           <button onClick={handleExport} className="btn-secondary w-full">导出数据 (JSON)</button>

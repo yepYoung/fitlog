@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday, getGreeting, getMealLabel } from '../utils/constants'
+import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import SwipeToDelete from '../components/SwipeToDelete'
 import usePhotoURL from '../hooks/usePhotoURL'
 import type { AppRecord, ExerciseRecord, FoodRecord, WeightRecord } from '../types'
@@ -11,26 +12,38 @@ function SummaryCard() {
   const settings = useStore((s) => s.settings)
   const today = getToday()
 
-  const { mealCount, exerciseMin } = useMemo(() => {
+  const { totalCalories, exerciseMin } = useMemo(() => {
     const todayRecords = records.filter((r) => r.date === today)
-    const meals = todayRecords.filter((r) => r.type === 'food').length
+    const calories = todayRecords
+      .filter((r): r is FoodRecord => r.type === 'food')
+      .reduce((sum, r) => sum + getFoodTotalCalories(r), 0)
     const exMin = todayRecords
       .filter((r): r is ExerciseRecord => r.type === 'exercise')
       .reduce((sum, r) => sum + (r.durationMin || 0), 0)
-    return { mealCount: meals, exerciseMin: exMin }
+    return { totalCalories: calories, exerciseMin: exMin }
   }, [records, today])
 
   const { dailyExerciseGoal } = settings
   const exPct = dailyExerciseGoal > 0 ? Math.min((exerciseMin / dailyExerciseGoal) * 100, 100) : 0
 
   return (
-    <div className="glass p-5 animate-slide-up">
-      <div className="flex gap-4">
+    <div className="glass glass-media p-5 animate-slide-up">
+      <div
+        className="glass-media__image"
+        style={{ backgroundImage: "url('/card-demo-desert.png')" }}
+      />
+      <div
+        className="glass-media__blur"
+        style={{ backgroundImage: "url('/card-demo-desert.png')" }}
+      />
+      <div className="glass-media__veil" />
+      <div className="glass-media__shine" />
+      <div className="glass-media__content flex gap-4">
         {/* Meals */}
         <div className="flex-1">
           <span className="text-xs block mb-1 text-theme-tertiary">今日饮食</span>
-          <span className="text-3xl font-bold">{mealCount}</span>
-          <span className="text-sm ml-1 text-theme-tertiary">餐</span>
+          <span className="text-3xl font-bold">{totalCalories}</span>
+          <span className="text-sm ml-1 text-theme-tertiary">卡路里</span>
         </div>
         {/* Divider */}
         <div style={{ width: 1, background: 'var(--glass-divider)' }} />
@@ -158,7 +171,7 @@ function RecordItem({ record, onEdit, onDelete }: { record: AppRecord; onEdit: (
           </div>}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-medium truncate">{foodRec ? foodRec.name : exRec?.exerciseType}</span>
+          <span className="font-medium truncate">{foodRec ? getFoodDisplayName(foodRec) : exRec?.exerciseType}</span>
           {foodRec && (
             <span className="text-xs px-1.5 py-0.5 rounded" style={{ color: 'var(--text-secondary)', background: 'var(--chip-bg)' }}>
               {getMealLabel(foodRec.category)}
@@ -167,7 +180,7 @@ function RecordItem({ record, onEdit, onDelete }: { record: AppRecord; onEdit: (
         </div>
         <div className="text-xs mt-0.5 truncate text-theme-tertiary">
           {isFood ? (
-            <>{record.time}{record.note && ` · ${record.note}`}</>
+            <>{record.time}{foodRec ? ` · ${getFoodItemCount(foodRec)}项 · ${getFoodTotalCalories(foodRec)}卡路里` : ''}</>
           ) : exRec ? (
             formatExerciseDetail(exRec)
           ) : null}
@@ -205,15 +218,17 @@ export default function Home() {
   return (
     <div className="px-4 pt-12 safe-top">
       <div className="mb-6 animate-slide-up">
-        <h1 className="text-2xl font-bold">{getGreeting()}</h1>
-        <p className="text-sm mt-1 text-theme-tertiary">{dateStr} {weekdays[now.getDay()]}</p>
+        <div className="flex items-baseline justify-between gap-4">
+          <h1 className="text-2xl font-bold shrink-0">{getGreeting()}</h1>
+          <p className="text-sm text-theme-tertiary text-right">{dateStr} {weekdays[now.getDay()]}</p>
+        </div>
       </div>
 
       <SummaryCard />
       <WeightCard />
 
       <div className="flex gap-3 mt-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <button onClick={() => navigate('/record/food')} className="flex-1 btn-primary flex items-center justify-center gap-2 text-base">
+        <button onClick={() => navigate('/record/food')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
           <span className="text-lg">+</span> 饮食
         </button>
         <button onClick={() => navigate('/record/exercise')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
@@ -221,24 +236,8 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Food Records */}
-      <div className="mt-6">
-        <h2 className="text-base font-semibold mb-3 text-theme-secondary">🍽️ 今日饮食</h2>
-        {foodRecords.length === 0 ? (
-          <div className="glass text-center py-8 text-theme-tertiary">
-            <p className="text-sm">还没有饮食记录</p>
-          </div>
-        ) : (
-          <div className="glass overflow-hidden divide-y border-glass-divider">
-            {foodRecords.map((r) => (
-              <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} />
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Exercise Records */}
-      <div className="mt-5 mb-4">
+      <div className="mt-6">
         <h2 className="text-base font-semibold mb-3 text-theme-secondary">💪 今日运动</h2>
         {exerciseRecords.length === 0 ? (
           <div className="glass text-center py-8 text-theme-tertiary">
@@ -248,6 +247,22 @@ export default function Home() {
           <div className="glass overflow-hidden divide-y border-glass-divider">
             {exerciseRecords.map((r) => (
               <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} onDelete={() => deleteRecord(r.id)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Food Records */}
+      <div className="mt-5 mb-4">
+        <h2 className="text-base font-semibold mb-3 text-theme-secondary">🍽️ 今日饮食</h2>
+        {foodRecords.length === 0 ? (
+          <div className="glass text-center py-8 text-theme-tertiary">
+            <p className="text-sm">还没有饮食记录</p>
+          </div>
+        ) : (
+          <div className="glass overflow-hidden divide-y border-glass-divider">
+            {foodRecords.map((r) => (
+              <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} />
             ))}
           </div>
         )}

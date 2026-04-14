@@ -1,12 +1,21 @@
+export interface FoodItem {
+  name: string
+  note: string | null
+  calories: number | null
+}
+
 export interface FoodRecord {
   id: string
   type: 'food'
   date: string
   time: string
   category: 'breakfast' | 'lunch' | 'dinner' | 'snack'
-  name: string
-  note: string | null
+  items: FoodItem[]
   photoId: string | null
+  /** @deprecated Use items instead */
+  name?: string
+  /** @deprecated Use items instead */
+  note?: string | null
   /** @deprecated Use photoId instead */
   photo?: string | null
   createdAt: string
@@ -41,7 +50,16 @@ export interface WeightRecord {
   createdAt: string
 }
 
-export type AppRecord = FoodRecord | ExerciseRecord | WeightRecord
+export interface ReflectionRecord {
+  id: string
+  type: 'reflection'
+  date: string
+  time: string
+  content: string
+  createdAt: string
+}
+
+export type AppRecord = FoodRecord | ExerciseRecord | WeightRecord | ReflectionRecord
 
 /** Distributive Omit that preserves union members */
 export type NewRecord = {
