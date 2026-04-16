@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday, STRENGTH_GROUPS } from '../utils/constants'
@@ -19,24 +19,30 @@ export default function ExerciseRecord() {
   const showToast = useStore((s) => s.showToast)
   const commonStrength = useStore((s) => s.settings.commonStrength)
   const commonCardio = useStore((s) => s.settings.commonCardio)
+  const exerciseDraft = useStore((s) => s.exerciseDraft)
+  const setExerciseDraft = useStore((s) => s.setExerciseDraft)
+  const clearExerciseDraft = useStore((s) => s.clearExerciseDraft)
 
   const editRecord = editId ? records.find((r) => r.id === editId) as ExerciseRecordType | undefined : null
   const editExercise = editRecord ?? null
+  const draft = editExercise ? null : exerciseDraft
 
-  const [category, setCategory] = useState(editExercise?.exerciseCategory ?? 'strength')
-  const [exerciseType, setExerciseType] = useState(editExercise?.exerciseType ?? '')
+  const [category, setCategory] = useState(editExercise?.exerciseCategory ?? draft?.exerciseCategory ?? 'strength')
+  const [exerciseType, setExerciseType] = useState(editExercise?.exerciseType ?? draft?.exerciseType ?? '')
   const [sets, setSets] = useState<Array<{ weight: string; reps: string }>>(
-    editExercise?.sets?.map((s) => ({ weight: String(s.weight), reps: String(s.reps) })) ?? [{ weight: '', reps: '' }]
+    editExercise?.sets?.map((s) => ({ weight: String(s.weight), reps: String(s.reps) }))
+    ?? draft?.sets
+    ?? [{ weight: '', reps: '' }]
   )
-  const [durationMin, setDurationMin] = useState(editExercise?.durationMin?.toString() ?? '')
+  const [durationMin, setDurationMin] = useState(editExercise?.durationMin?.toString() ?? draft?.durationMin ?? '')
   const [cardioParams, setCardioParams] = useState<Record<string, string>>(
     editExercise?.cardioParams
       ? Object.fromEntries(Object.entries(editExercise.cardioParams).map(([k, v]) => [k, String(v)]))
-      : {}
+      : draft?.cardioParams ?? {}
   )
-  const [note, setNote] = useState(editExercise?.note ?? '')
+  const [note, setNote] = useState(editExercise?.note ?? draft?.note ?? '')
   const globalTimer = useStore((s) => s.timer)
-  const [showTimer, setShowTimer] = useState(globalTimer.running || globalTimer.base > 0)
+  const [showTimer, setShowTimer] = useState(draft?.showTimer ?? (globalTimer.running || globalTimer.base > 0))
   const [errorField, setErrorField] = useState<string | null>(null)
 
   const now = new Date()
@@ -48,6 +54,19 @@ export default function ExerciseRecord() {
   )
 
   const isSetsEmpty = sets.every((s) => !s.weight.trim() && !s.reps.trim())
+
+  useEffect(() => {
+    if (editExercise) return
+    setExerciseDraft({
+      exerciseCategory: category,
+      exerciseType,
+      sets,
+      durationMin,
+      cardioParams,
+      note,
+      showTimer,
+    })
+  }, [editExercise, category, exerciseType, sets, durationMin, cardioParams, note, showTimer, setExerciseDraft])
 
   function copyLastStrength() {
     if (!lastStrength) return
@@ -117,7 +136,11 @@ export default function ExerciseRecord() {
     }
 
     if (editExercise && editId) { updateRecord(editId, data); showToast('已更新') }
-    else { addRecord(data); showToast('已记录') }
+    else {
+      addRecord(data)
+      clearExerciseDraft()
+      showToast('已记录')
+    }
     navigate(-1)
   }
 

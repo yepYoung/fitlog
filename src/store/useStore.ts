@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
-import { loadRecords, saveRecords, loadSettings, saveSettings } from '../utils/storage'
+import { loadRecords, saveRecords, loadSettings, saveSettings, loadExerciseDraft, saveExerciseDraft } from '../utils/storage'
 import { deleteImage } from '../utils/imageDB'
 import { DEFAULT_SETTINGS, STRENGTH_GROUPS } from '../utils/constants'
 import { getStoredTheme, setStoredTheme, applyTheme } from '../utils/theme'
 import type { ThemeMode } from '../utils/theme'
-import type { AppRecord, NewRecord, Settings } from '../types'
+import type { AppRecord, ExerciseDraft, NewRecord, Settings } from '../types'
 
 export interface TimerState {
   running: boolean
@@ -28,6 +28,9 @@ interface StoreState {
   startTimer: () => void
   pauseTimer: () => void
   resetTimer: () => void
+  exerciseDraft: ExerciseDraft | null
+  setExerciseDraft: (draft: ExerciseDraft) => void
+  clearExerciseDraft: () => void
 }
 
 const useStore = create<StoreState>((set, get) => ({
@@ -99,6 +102,16 @@ const useStore = create<StoreState>((set, get) => ({
   },
   resetTimer() {
     set({ timer: { running: false, startedAt: null, base: 0 } })
+  },
+
+  exerciseDraft: loadExerciseDraft(),
+  setExerciseDraft(draft: ExerciseDraft) {
+    saveExerciseDraft(draft)
+    set({ exerciseDraft: draft })
+  },
+  clearExerciseDraft() {
+    saveExerciseDraft(null)
+    set({ exerciseDraft: null })
   },
 }))
 

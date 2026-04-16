@@ -7,7 +7,6 @@ import {
   getFoodItems,
   getLastMealItems,
   getFrequentFoodNames,
-  mergeSmartFoodSuggestions,
 } from '../utils/food'
 import { compressImage } from '../utils/image'
 import { saveImage, loadImage, deleteImage, blobToURL } from '../utils/imageDB'
@@ -34,7 +33,6 @@ export default function FoodRecord() {
   const addRecord = useStore((s) => s.addRecord)
   const updateRecord = useStore((s) => s.updateRecord)
   const showToast = useStore((s) => s.showToast)
-  const commonFoods = useStore((s) => s.settings.commonFoods)
 
   const editFood = editId
     ? records.find((record): record is FoodRecordType => record.type === 'food' && record.id === editId) ?? null
@@ -62,8 +60,8 @@ export default function FoodRecord() {
   )
 
   const smartFoods = useMemo(
-    () => mergeSmartFoodSuggestions(getFrequentFoodNames(records, 15), commonFoods, 18),
-    [records, commonFoods],
+    () => getFrequentFoodNames(records, 18),
+    [records],
   )
 
   function copyLastMeal() {

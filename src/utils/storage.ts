@@ -1,8 +1,9 @@
-import type { AppRecord, FoodItem, FoodRecord, Settings } from '../types'
+import type { AppRecord, ExerciseDraft, FoodItem, FoodRecord, Settings } from '../types'
 
 interface StorageData {
   records?: AppRecord[]
   settings?: Settings
+  exerciseDraft?: ExerciseDraft | null
 }
 
 const STORAGE_KEY: string = 'fitlog_data'
@@ -89,6 +90,16 @@ export function loadSettings(): Settings | null {
 export function saveSettings(settings: Settings): void {
   const data: StorageData = loadAll() ?? {}
   data.settings = settings
+  saveAll(data)
+}
+
+export function loadExerciseDraft(): ExerciseDraft | null {
+  return loadAll()?.exerciseDraft ?? null
+}
+
+export function saveExerciseDraft(draft: ExerciseDraft | null): void {
+  const data: StorageData = loadAll() ?? {}
+  data.exerciseDraft = draft
   saveAll(data)
 }
 

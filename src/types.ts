@@ -40,6 +40,16 @@ export interface ExerciseRecord {
   createdAt: string
 }
 
+export interface ExerciseDraft {
+  exerciseCategory: 'strength' | 'cardio'
+  exerciseType: string
+  sets: Array<{ weight: string; reps: string }>
+  durationMin: string
+  cardioParams: Record<string, string>
+  note: string
+  showTimer: boolean
+}
+
 export interface WeightRecord {
   id: string
   type: 'weight'

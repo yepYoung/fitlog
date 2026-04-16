@@ -144,16 +144,8 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Common Foods */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用食物</h2>
-        <EditableChipList items={settings.commonFoods}
-          onChange={(v) => updateSettings({ commonFoods: v })} placeholder="添加新的常用食物"
-          activeColor="var(--text-yellow)" />
-      </div>
-
       {/* Common Strength */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用力量动作</h2>
         <EditableGroupedChipList groups={settings.commonStrength ?? []}
           onChange={(v) => updateSettings({ commonStrength: v })}
@@ -161,7 +153,7 @@ export default function Settings() {
       </div>
 
       {/* Common Cardio */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用有氧运动</h2>
         <EditableChipList items={settings.commonCardio ?? []}
           onChange={(v) => updateSettings({ commonCardio: v })} placeholder="添加新的有氧运动"
@@ -169,7 +161,7 @@ export default function Settings() {
       </div>
 
       {/* Data */}
-      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+      <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">数据管理</h2>
         <div className="space-y-2">
           <button onClick={handleExport} className="btn-secondary w-full">导出数据 (JSON)</button>

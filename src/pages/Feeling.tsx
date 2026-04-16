@@ -99,7 +99,6 @@ export default function Feeling() {
             onChange={(e) => setContent(e.target.value)}
             placeholder="今天训练怎么样？饮食有没有控制住？或者随便写点什么。"
             className="input-field min-h-[220px] py-4 resize-none leading-7"
-            autoFocus
           />
 
           <div className="flex items-center justify-between mt-3 text-xs text-theme-tertiary">

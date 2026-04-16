@@ -1,11 +1,16 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useStore from '../store/useStore'
-import { clearAllData, loadRecords } from '../utils/storage'
+import { clearAllData, loadExerciseDraft, loadRecords } from '../utils/storage'
 
 beforeEach(() => {
   clearAllData()
   // Reset zustand store state directly
-  useStore.setState({ records: [], settings: useStore.getState().settings })
+  useStore.setState({
+    records: [],
+    settings: useStore.getState().settings,
+    timer: { running: false, startedAt: null, base: 0 },
+    exerciseDraft: null,
+  })
 })
 
 describe('useStore', () => {
@@ -91,5 +96,26 @@ describe('useStore', () => {
   it('updates settings', () => {
     useStore.getState().updateSettings({ dailyExerciseGoal: 45 })
     expect(useStore.getState().settings.dailyExerciseGoal).toBe(90)
+  })
+
+  it('persists exercise draft', () => {
+    const draft = {
+      exerciseCategory: 'strength' as const,
+      exerciseType: '卧推',
+      sets: [{ weight: '60', reps: '8' }],
+      durationMin: '',
+      cardioParams: {},
+      note: '第1组状态好',
+      showTimer: true,
+    }
+
+    useStore.getState().setExerciseDraft(draft)
+
+    expect(useStore.getState().exerciseDraft).toEqual(draft)
+    expect(loadExerciseDraft()).toEqual(draft)
+
+    useStore.getState().clearExerciseDraft()
+    expect(useStore.getState().exerciseDraft).toBeNull()
+    expect(loadExerciseDraft()).toBeNull()
   })
 })
