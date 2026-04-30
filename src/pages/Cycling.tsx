@@ -3,7 +3,7 @@ import useStore from '../store/useStore'
 import PageBackground from '../components/PageBackground'
 import RouteMap from '../components/RouteMap'
 import { formatDate } from '../utils/constants'
-import { formatDistance, formatDuration, formatPaceSpeed, routeAscentM, routeDistanceKm, shouldKeepPoint } from '../utils/cycling'
+import { filterCyclingPoint, formatDistance, formatDuration, formatPaceSpeed, routeAscentM, routeDistanceKm } from '../utils/cycling'
 import type { ExerciseRecord, GPSPoint } from '../types'
 
 type RideStatus = 'idle' | 'acquiring' | 'recording' | 'paused' | 'error'
@@ -116,10 +116,7 @@ export default function Cycling() {
 
     if (statusRef.current !== 'recording') return
 
-    setPoints((previous) => {
-      if (!shouldKeepPoint(previous, point)) return previous
-      return [...previous, point]
-    })
+    addTrackPoint(point)
   }
 
   function handleLocationError(locationError: GeolocationPositionError) {
@@ -164,9 +161,14 @@ export default function Cycling() {
   function beginRecording(firstPoint: GPSPoint) {
     activeStartedAtRef.current = Date.now()
     setRideStatus('recording')
+    addTrackPoint(firstPoint)
+  }
+
+  function addTrackPoint(point: GPSPoint) {
     setPoints((previous) => {
-      if (previous.length > 0 && !shouldKeepPoint(previous, firstPoint)) return previous
-      return [...previous, firstPoint]
+      const decision = filterCyclingPoint(previous, point)
+      if (!decision.accepted || !decision.point) return previous
+      return [...previous, decision.point]
     })
   }
 
