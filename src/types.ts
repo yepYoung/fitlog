@@ -26,6 +26,24 @@ export interface StrengthSet {
   reps: number
 }
 
+export interface GPSPoint {
+  lat: number
+  lng: number
+  accuracy: number | null
+  altitude: number | null
+  speed: number | null
+  timestamp: number
+}
+
+export interface CyclingRoute {
+  points: GPSPoint[]
+  distanceKm: number
+  durationSec: number
+  startedAt: string
+  endedAt: string
+  ascentM?: number
+}
+
 export interface ExerciseRecord {
   id: string
   type: 'exercise'
@@ -36,6 +54,7 @@ export interface ExerciseRecord {
   sets?: StrengthSet[]
   durationMin?: number
   cardioParams?: Record<string, number>
+  cyclingRoute?: CyclingRoute
   note: string | null
   createdAt: string
 }

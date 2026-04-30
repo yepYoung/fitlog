@@ -34,7 +34,12 @@ export const CARDIO_PARAMS: Record<string, CardioParamDef[]> = {
   '跑步': [{ key: 'speed', label: '速度', unit: 'km/h' }, { key: 'distance', label: '距离', unit: 'km' }],
   '爬坡': [{ key: 'incline', label: '坡度', unit: '%' }, { key: 'speed', label: '速度', unit: 'km/h' }],
   '椭圆机': [{ key: 'resistance', label: '阻力', unit: '' }],
-  '骑行': [{ key: 'speed', label: '速度', unit: 'km/h' }, { key: 'distance', label: '距离', unit: 'km' }],
+  '骑行': [
+    { key: 'speed', label: '均速', unit: 'km/h' },
+    { key: 'distance', label: '距离', unit: 'km' },
+    { key: 'maxSpeed', label: '最高速度', unit: 'km/h' },
+    { key: 'ascent', label: '爬升', unit: 'm' },
+  ],
   '划船机': [{ key: 'resistance', label: '阻力', unit: '' }, { key: 'distance', label: '距离', unit: 'm' }],
   '跳绳': [{ key: 'count', label: '个数', unit: '个' }],
   '游泳': [{ key: 'distance', label: '距离', unit: 'm' }],

@@ -9,6 +9,7 @@ const Home = lazy(() => import('./pages/Home'))
 const Feeling = lazy(() => import('./pages/Feeling'))
 const FoodRecord = lazy(() => import('./pages/FoodRecord'))
 const ExerciseRecord = lazy(() => import('./pages/ExerciseRecord'))
+const Cycling = lazy(() => import('./pages/Cycling'))
 const History = lazy(() => import('./pages/History'))
 const Statistics = lazy(() => import('./pages/Statistics'))
 const Settings = lazy(() => import('./pages/Settings'))
@@ -38,6 +39,7 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="feeling" element={<Feeling />} />
+          <Route path="cycling" element={<Cycling />} />
           <Route path="history" element={<History />} />
           <Route path="stats" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />

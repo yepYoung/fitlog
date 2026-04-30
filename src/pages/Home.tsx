@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday, getGreeting, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
+import { formatDistance } from '../utils/cycling'
 import SwipeToDelete from '../components/SwipeToDelete'
 import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
@@ -74,10 +75,12 @@ function formatExerciseDetail(record: ExerciseRecord) {
   if (record.durationMin) {
     const params = record.cardioParams || {}
     const parts = [record.durationMin + '分钟']
+    if (record.cyclingRoute) parts.push(formatDistance(record.cyclingRoute.distanceKm))
     if (params.incline) parts.push(`坡度${params.incline}%`)
     if (params.speed) parts.push(`${params.speed}km/h`)
+    if (params.ascent) parts.push(`爬升${params.ascent}m`)
     if (params.resistance) parts.push(`阻力${params.resistance}`)
-    if (params.distance) parts.push(`${params.distance}${params.distance > 100 ? 'm' : 'km'}`)
+    if (params.distance && !record.cyclingRoute) parts.push(`${params.distance}${params.distance > 100 ? 'm' : 'km'}`)
     return parts.join(' · ')
   }
   return ''
@@ -213,7 +216,9 @@ export default function Home() {
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
   function editUrl(r: AppRecord) {
-    return r.type === 'food' ? `/record/food?edit=${r.id}` : `/record/exercise?edit=${r.id}`
+    if (r.type === 'food') return `/record/food?edit=${r.id}`
+    if (r.type === 'exercise' && r.cyclingRoute) return '/cycling'
+    return `/record/exercise?edit=${r.id}`
   }
 
   return (
@@ -236,6 +241,9 @@ export default function Home() {
         </button>
         <button onClick={() => navigate('/record/exercise')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
           <span className="text-lg">+</span> 运动
+        </button>
+        <button onClick={() => navigate('/cycling')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
+          <span className="text-lg">⌁</span> 骑行
         </button>
       </div>
 

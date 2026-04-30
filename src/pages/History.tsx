@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { formatDate, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
+import { formatDistance } from '../utils/cycling'
 import SwipeToDelete from '../components/SwipeToDelete'
 import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
@@ -65,8 +66,10 @@ function formatExDetail(r: ExerciseRecord) {
   if (r.durationMin) {
     const p = r.cardioParams || {}
     const parts = [r.durationMin + '分钟']
+    if (r.cyclingRoute) parts.push(formatDistance(r.cyclingRoute.distanceKm))
     if (p.incline) parts.push(`坡度${p.incline}%`)
     if (p.speed) parts.push(`${p.speed}km/h`)
+    if (p.ascent) parts.push(`爬升${p.ascent}m`)
     return parts.join(' · ')
   }
   return ''
@@ -178,7 +181,7 @@ export default function History() {
                     record.type === 'food'
                       ? `/record/food?edit=${record.id}`
                       : record.type === 'exercise'
-                        ? `/record/exercise?edit=${record.id}`
+                        ? record.cyclingRoute ? '/cycling' : `/record/exercise?edit=${record.id}`
                         : `/feeling?edit=${record.id}`
                   )}
                   onDelete={() => deleteRecord(record.id)} />
