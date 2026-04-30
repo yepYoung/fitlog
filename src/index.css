@@ -18,9 +18,9 @@
     --glass-divider: rgba(255, 255, 255, 0.06);
     --glass-inset: rgba(255, 255, 255, 0.3);
     --glass-highlight: rgba(255, 255, 255, 0.15);
-    --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: rgba(255, 255, 255, 0.55);
-    --text-tertiary: rgba(255, 255, 255, 0.3);
+    --text-primary: rgba(255, 255, 255, 0.99);
+    --text-secondary: rgba(255, 255, 255, 0.84);
+    --text-tertiary: rgba(255, 255, 255, 0.68);
     --text-accent: #60A5FA;
     --text-green: #34D399;
     --text-yellow: #FBBF24;
@@ -32,7 +32,7 @@
     --header-bg: rgba(5, 5, 16, 0.7);
     --chip-bg: rgba(255, 255, 255, 0.05);
     --chip-border: rgba(255, 255, 255, 0.08);
-    --chip-text: rgba(255, 255, 255, 0.6);
+    --chip-text: rgba(255, 255, 255, 0.86);
     --delete-bg: rgba(248, 113, 113, 0.15);
     --item-bg: rgba(255, 255, 255, 0.02);
     --food-icon-bg: rgba(251, 191, 36, 0.1);
@@ -54,13 +54,13 @@
     --glass-divider: rgba(0, 0, 0, 0.06);
     --glass-inset: rgba(255, 255, 255, 0.8);
     --glass-highlight: rgba(255, 255, 255, 0.6);
-    --text-primary: rgba(0, 0, 0, 0.88);
-    --text-secondary: rgba(0, 0, 0, 0.5);
-    --text-tertiary: rgba(0, 0, 0, 0.25);
-    --text-accent: #2563EB;
-    --text-green: #059669;
-    --text-yellow: #D97706;
-    --text-red: #DC2626;
+    --text-primary: rgba(6, 10, 18, 0.97);
+    --text-secondary: rgba(6, 10, 18, 0.78);
+    --text-tertiary: rgba(6, 10, 18, 0.6);
+    --text-accent: #1D4ED8;
+    --text-green: #047857;
+    --text-yellow: #B45309;
+    --text-red: #B91C1C;
     --bar-bg: rgba(0, 0, 0, 0.05);
     --shadow-glass: 0 12px 40px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
     --shadow-glass-inset: inset 0 0 0 0.5px var(--glass-inset), inset 0 1px 0 var(--glass-highlight);
@@ -68,7 +68,7 @@
     --header-bg: rgba(232, 236, 244, 0.75);
     --chip-bg: rgba(0, 0, 0, 0.03);
     --chip-border: rgba(0, 0, 0, 0.06);
-    --chip-text: rgba(0, 0, 0, 0.55);
+    --chip-text: rgba(6, 10, 18, 0.8);
     --delete-bg: rgba(220, 38, 38, 0.08);
     --item-bg: rgba(0, 0, 0, 0.015);
     --food-icon-bg: rgba(217, 119, 6, 0.08);
@@ -81,8 +81,11 @@
 
   body {
     font-family: 'Bricolage Grotesque', 'Noto Serif SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    font-weight: 500;
     font-feature-settings: 'ss01', 'ss02', 'cv11';
     font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
     background-image:
       linear-gradient(155deg, var(--bg-gradient-from) 0%, var(--bg-gradient-via1) 35%, var(--bg-gradient-via2) 65%, var(--bg-gradient-to) 100%),
@@ -101,6 +104,25 @@
   }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+@layer utilities {
+  .font-light,
+  .font-normal {
+    font-weight: 500;
+  }
+
+  .font-medium {
+    font-weight: 600;
+  }
+
+  .font-semibold {
+    font-weight: 700;
+  }
+
+  .font-bold {
+    font-weight: 800;
   }
 }
 
@@ -259,6 +281,107 @@
     box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2),
                 inset 0 0 0 0.5px rgba(96, 165, 250, 0.3);
     background: var(--glass-input-focus);
+  }
+
+  .cycling-map-shell {
+    border-radius: 22px;
+  }
+
+  .cycling-map {
+    z-index: 0;
+    background: #dbe7ef;
+  }
+
+  .cycling-map .leaflet-tile {
+    filter: saturate(0.95) contrast(1.03);
+  }
+
+  [data-theme="dark"] .cycling-map .leaflet-tile {
+    filter: brightness(0.74) saturate(0.9) contrast(1.15);
+  }
+
+  .cycling-map .leaflet-control-zoom {
+    overflow: hidden;
+    border: 1px solid var(--glass-border-light);
+    border-radius: 14px;
+    box-shadow: var(--shadow-glass);
+  }
+
+  .cycling-map .leaflet-control-zoom a {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    font-weight: 800;
+    line-height: 36px;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+
+  .cycling-map .leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.62);
+    color: rgba(6, 10, 18, 0.72);
+    font-size: 10px;
+  }
+
+  [data-theme="dark"] .cycling-map .leaflet-control-attribution {
+    background: rgba(0, 0, 0, 0.42);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .cycling-map-badge {
+    background: var(--glass-bg);
+    background: color-mix(in srgb, var(--glass-bg) 82%, transparent);
+    border: 1px solid var(--glass-border-light);
+    box-shadow: var(--shadow-glass-inset);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+  }
+
+  .cycling-current-marker {
+    position: relative;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.16);
+  }
+
+  .cycling-current-marker span {
+    position: absolute;
+    inset: 7px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #2563eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+  }
+
+  .cycling-current-marker.is-recording {
+    background: rgba(16, 185, 129, 0.22);
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0.18), 0 0 22px rgba(16, 185, 129, 0.32);
+  }
+
+  .cycling-current-marker.is-recording span {
+    background: #10b981;
+  }
+
+  .cycling-route-pin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+  }
+
+  .cycling-route-pin--start {
+    background: #2563eb;
+  }
+
+  .cycling-route-pin--finish {
+    background: #10b981;
   }
 }
 

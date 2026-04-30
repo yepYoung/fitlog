@@ -32,7 +32,7 @@ export default function Cycling() {
   const records = useStore((s) => s.records)
   const showToast = useStore((s) => s.showToast)
 
-  const [status, setStatus] = useState<RideStatus>('idle')
+  const [status, setStatus] = useState<RideStatus>('acquiring')
   const [points, setPoints] = useState<GPSPoint[]>([])
   const [currentPoint, setCurrentPoint] = useState<GPSPoint | null>(null)
   const [elapsedSec, setElapsedSec] = useState(0)
@@ -44,12 +44,15 @@ export default function Cycling() {
   const activeStartedAtRef = useRef<number | null>(null)
   const accumulatedSecRef = useRef(0)
   const rideStartedAtRef = useRef<string | null>(null)
+  const pendingStartRef = useRef(false)
 
   useEffect(() => {
     statusRef.current = status
   }, [status])
 
   useEffect(() => {
+    startLocationPreview()
+
     const timer = window.setInterval(() => {
       if (statusRef.current !== 'recording' || activeStartedAtRef.current == null) return
       setElapsedSec(accumulatedSecRef.current + Math.floor((Date.now() - activeStartedAtRef.current) / 1000))
@@ -57,7 +60,7 @@ export default function Cycling() {
 
     return () => {
       window.clearInterval(timer)
-      stopWatcher()
+      stopLocationWatch()
     }
   }, [])
 
@@ -77,7 +80,7 @@ export default function Cycling() {
       .slice(0, 3)
   }, [records])
 
-  function stopWatcher() {
+  function stopLocationWatch() {
     if (watchIdRef.current != null && 'geolocation' in navigator) {
       navigator.geolocation.clearWatch(watchIdRef.current)
       watchIdRef.current = null
@@ -99,6 +102,17 @@ export default function Cycling() {
   function handlePosition(position: GeolocationPosition) {
     const point = pointFromPosition(position)
     setCurrentPoint(point)
+    setError('')
+
+    if (pendingStartRef.current) {
+      pendingStartRef.current = false
+      beginRecording(point)
+      return
+    }
+
+    if (statusRef.current === 'acquiring') {
+      setRideStatus('idle')
+    }
 
     if (statusRef.current !== 'recording') return
 
@@ -109,8 +123,9 @@ export default function Cycling() {
   }
 
   function handleLocationError(locationError: GeolocationPositionError) {
-    stopWatcher()
+    stopLocationWatch()
     activeStartedAtRef.current = null
+    pendingStartRef.current = false
     setRideStatus('error')
     const message = locationError.code === locationError.PERMISSION_DENIED
       ? '请允许浏览器访问定位'
@@ -121,7 +136,7 @@ export default function Cycling() {
     showToast(message)
   }
 
-  function startWatcher() {
+  function startLocationPreview() {
     if (!('geolocation' in navigator)) {
       setError('当前浏览器不支持定位')
       setRideStatus('error')
@@ -129,8 +144,12 @@ export default function Cycling() {
       return
     }
 
+    if (watchIdRef.current != null) return
+
     setError('')
-    setRideStatus('acquiring')
+    if (!currentPoint && statusRef.current !== 'recording' && statusRef.current !== 'paused') {
+      setRideStatus('acquiring')
+    }
 
     const options: PositionOptions = {
       enableHighAccuracy: true,
@@ -138,17 +157,17 @@ export default function Cycling() {
       timeout: 15000,
     }
 
-    navigator.geolocation.getCurrentPosition((position) => {
-      const firstPoint = pointFromPosition(position)
-      setCurrentPoint(firstPoint)
-      setPoints((previous) => {
-        if (previous.length > 0 && !shouldKeepPoint(previous, firstPoint)) return previous
-        return [...previous, firstPoint]
-      })
-      activeStartedAtRef.current = Date.now()
-      setRideStatus('recording')
-      watchIdRef.current = navigator.geolocation.watchPosition(handlePosition, handleLocationError, options)
-    }, handleLocationError, options)
+    navigator.geolocation.getCurrentPosition(handlePosition, handleLocationError, options)
+    watchIdRef.current = navigator.geolocation.watchPosition(handlePosition, handleLocationError, options)
+  }
+
+  function beginRecording(firstPoint: GPSPoint) {
+    activeStartedAtRef.current = Date.now()
+    setRideStatus('recording')
+    setPoints((previous) => {
+      if (previous.length > 0 && !shouldKeepPoint(previous, firstPoint)) return previous
+      return [...previous, firstPoint]
+    })
   }
 
   function startRide() {
@@ -157,8 +176,15 @@ export default function Cycling() {
     activeStartedAtRef.current = null
     setElapsedSec(0)
     setPoints([])
-    setCurrentPoint(null)
-    startWatcher()
+    pendingStartRef.current = true
+    startLocationPreview()
+
+    if (currentPoint) {
+      pendingStartRef.current = false
+      beginRecording(currentPoint)
+    } else {
+      setRideStatus('acquiring')
+    }
   }
 
   function pauseRide() {
@@ -166,25 +192,32 @@ export default function Cycling() {
     accumulatedSecRef.current = total
     activeStartedAtRef.current = null
     setElapsedSec(total)
-    stopWatcher()
     setRideStatus('paused')
   }
 
   function resumeRide() {
-    startWatcher()
+    pendingStartRef.current = true
+    startLocationPreview()
+
+    if (currentPoint) {
+      pendingStartRef.current = false
+      beginRecording(currentPoint)
+    } else {
+      setRideStatus('acquiring')
+    }
   }
 
   function discardRide() {
-    stopWatcher()
     accumulatedSecRef.current = 0
     activeStartedAtRef.current = null
     rideStartedAtRef.current = null
+    pendingStartRef.current = false
     setElapsedSec(0)
     setPoints([])
-    setCurrentPoint(null)
     setNote('')
     setError('')
-    setRideStatus('idle')
+    setRideStatus(currentPoint ? 'idle' : 'acquiring')
+    startLocationPreview()
   }
 
   function finishRide() {
@@ -192,7 +225,6 @@ export default function Cycling() {
     accumulatedSecRef.current = total
     activeStartedAtRef.current = null
     setElapsedSec(total)
-    stopWatcher()
 
     if (points.length < 2) {
       setRideStatus('paused')
@@ -254,7 +286,7 @@ export default function Cycling() {
           </div>
         </div>
 
-        <RouteMap points={points} currentPoint={currentPoint} recording={status === 'recording'} />
+        <RouteMap points={points} currentPoint={currentPoint} recording={status === 'recording'} locating={status === 'acquiring'} />
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="glass p-4">
