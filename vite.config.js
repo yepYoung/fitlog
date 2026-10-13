@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: { navigateFallbackDenylist: [/^\/api\//] },
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'fonts/*.woff2'],
       manifest: {
         name: 'FitLog - 健身饮食记录',
         short_name: 'FitLog',

@@ -52,7 +52,7 @@ export default function FloatingTimer() {
     >
       <span className={`w-2 h-2 rounded-full ${timer.running ? 'animate-pulse' : ''}`}
         style={{ background: timer.running ? 'var(--text-accent)' : 'var(--text-yellow)' }} />
-      <span className="text-sm font-mono font-medium" style={{ color: 'var(--text-accent)' }}>
+      <span className="text-sm font-numeric font-semibold" style={{ color: 'var(--text-accent)' }}>
         {formatTimer(elapsed)}
       </span>
       <span className="text-xs text-theme-tertiary">运动中</span>

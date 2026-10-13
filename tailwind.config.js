@@ -4,10 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Bricolage Grotesque"', '"Noto Serif SC"', '"PingFang SC"', '"Hiragino Sans GB"', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', '"Noto Serif SC"', 'sans-serif'],
-        numeric: ['"Bricolage Grotesque"', 'sans-serif'],
-        serif: ['"Noto Serif SC"', '"Songti SC"', 'serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', '"Noto Sans CJK SC"', 'sans-serif'],
+        display: ['"Roboto Condensed"', '-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', '"Noto Sans CJK SC"', 'sans-serif'],
+        numeric: ['"Roboto Condensed"', '"Arial Narrow"', 'sans-serif'],
       },
       colors: {
         accent: {

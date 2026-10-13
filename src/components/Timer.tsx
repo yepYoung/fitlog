@@ -52,7 +52,7 @@ export default function Timer({ onSave }: TimerProps) {
   return (
     <div className="glass p-5 text-center">
       {/* Timer Display */}
-      <div className="text-5xl font-bold tracking-wider mb-5 font-mono" style={{ color: timer.running ? 'var(--text-accent)' : 'var(--text-primary)' }}>
+      <div className="text-5xl font-bold tracking-wide mb-5 font-numeric" style={{ color: timer.running ? 'var(--text-accent)' : 'var(--text-primary)' }}>
         {formatTimer(elapsed)}
       </div>
 

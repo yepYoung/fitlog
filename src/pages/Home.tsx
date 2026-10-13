@@ -240,13 +240,13 @@ export default function Home() {
       <WeightCard />
 
       <div className="flex gap-3 mt-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <button onClick={() => navigate('/record/food')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
+        <button onClick={() => navigate('/record/food')} className="flex-1 btn-secondary flex items-center justify-center gap-1.5 px-3 text-base whitespace-nowrap">
           <span className="text-lg">+</span> 饮食
         </button>
-        <button onClick={() => navigate('/record/exercise')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
+        <button onClick={() => navigate('/record/exercise')} className="flex-1 btn-secondary flex items-center justify-center gap-1.5 px-3 text-base whitespace-nowrap">
           <span className="text-lg">+</span> 运动
         </button>
-        <button onClick={() => navigate('/cycling')} className="flex-1 btn-secondary flex items-center justify-center gap-2 text-base">
+        <button onClick={() => navigate('/cycling')} className="flex-1 btn-secondary flex items-center justify-center gap-1.5 px-3 text-base whitespace-nowrap">
           <span className="text-lg">⌁</span> 骑行
         </button>
       </div>

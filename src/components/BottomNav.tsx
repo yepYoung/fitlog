@@ -96,7 +96,7 @@ export default function BottomNav() {
             >
               {tab.icon(color)}
               <span className="text-xs transition-colors duration-200"
-                style={{ color, fontWeight: active ? 600 : 400 }}>
+                style={{ color, fontWeight: active ? 700 : 500 }}>
                 {tab.label}
               </span>
             </button>
