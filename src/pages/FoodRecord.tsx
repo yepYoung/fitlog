@@ -9,7 +9,7 @@ import {
   getFrequentFoodNames,
 } from '../utils/food'
 import { compressImage } from '../utils/image'
-import { saveImage, loadImage, deleteImage, blobToURL } from '../utils/imageDB'
+import { saveImage, loadImage, blobToURL } from '../utils/imageDB'
 import type { FoodItem, FoodRecord as FoodRecordType } from '../types'
 
 interface FoodItemDraft {
@@ -48,6 +48,7 @@ export default function FoodRecord() {
   const [photoURL, setPhotoURL] = useState<string | null>(null)
   const [photoBlob, setPhotoBlob] = useState<Blob | null>(null)
   const [photoLoading, setPhotoLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [errorItemId, setErrorItemId] = useState<string | null>(null)
 
   const lastMeal = useMemo(
@@ -82,7 +83,7 @@ export default function FoodRecord() {
     }
     loadImage(photoId).then((blob) => {
       if (blob) setPhotoURL(blobToURL(blob))
-    })
+    }).catch(() => showToast('照片加载失败，请重新打开'))
     return () => { if (photoURL && !photoURL.startsWith('data:')) URL.revokeObjectURL(photoURL) }
   }, [photoId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -132,15 +133,13 @@ export default function FoodRecord() {
 
   function handleRemovePhoto() {
     if (photoURL && !photoURL.startsWith('data:')) URL.revokeObjectURL(photoURL)
-    if (editFood?.photoId && !editFood.photoId.startsWith('data:')) {
-      deleteImage(editFood.photoId)
-    }
     setPhotoId(null)
     setPhotoURL(null)
     setPhotoBlob(null)
   }
 
   async function handleSave() {
+    if (saving || photoLoading) return
     const normalizedItems: FoodItem[] = []
 
     for (let i = 0; i < items.length; i++) {
@@ -175,13 +174,14 @@ export default function FoodRecord() {
       return
     }
 
+    setSaving(true)
+    try {
     let savedPhotoId = null
     if (photoBlob) {
       savedPhotoId = uuidv4()
       await saveImage(savedPhotoId, photoBlob)
-      if (editFood?.photoId && !editFood.photoId.startsWith('data:')) {
-        deleteImage(editFood.photoId)
-      }
+      setPhotoId(savedPhotoId)
+      setPhotoBlob(null)
     } else if (photoId && photoId !== 'pending') {
       savedPhotoId = photoId
     }
@@ -196,13 +196,15 @@ export default function FoodRecord() {
     }
 
     if (editFood && editId) {
-      updateRecord(editId, data)
+      await updateRecord(editId, data)
       showToast('已更新')
     } else {
-      addRecord(data)
+      await addRecord(data)
       showToast('已记录')
     }
     navigate(-1)
+    } catch (error) { showToast(error instanceof Error ? error.message : '未保存，请重试') }
+    finally { setSaving(false) }
   }
 
   return (
@@ -215,7 +217,7 @@ export default function FoodRecord() {
           </svg>
         </button>
         <h1 className="text-lg font-semibold">{editFood ? '编辑饮食' : '记录饮食'}</h1>
-        <button onClick={handleSave} className="font-medium px-2 py-1 text-theme-accent">保存</button>
+        <button onClick={handleSave} disabled={saving || photoLoading} className="font-medium px-2 py-1 text-theme-accent">{saving ? '保存中…' : '保存'}</button>
       </div>
 
       <div className="px-4 space-y-5 pb-10">
@@ -367,7 +369,7 @@ export default function FoodRecord() {
           )}
         </div>
 
-        <button onClick={handleSave} className="btn-primary w-full mt-4">
+        <button onClick={handleSave} disabled={saving || photoLoading} className="btn-primary w-full mt-4">
           {editFood ? '更新这一餐' : '保存这一餐'}
         </button>
       </div>

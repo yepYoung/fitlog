@@ -1,3 +1,5 @@
+import { isCloudActive, loadCloudPhoto, uploadCloudPhoto } from './cloud'
+
 const DB_NAME: string = 'fitlog-images'
 const STORE_NAME: string = 'photos'
 const DB_VERSION: number = 1
@@ -14,6 +16,7 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 export async function saveImage(id: string, blob: Blob): Promise<void> {
+  if (isCloudActive()) { await uploadCloudPhoto(id, blob); return }
   const db: IDBDatabase = await openDB()
   return new Promise<void>((resolve, reject) => {
     const tx: IDBTransaction = db.transaction(STORE_NAME, 'readwrite')
@@ -25,6 +28,11 @@ export async function saveImage(id: string, blob: Blob): Promise<void> {
 
 export async function loadImage(id: string | null | undefined): Promise<Blob | null> {
   if (!id) return null
+  return isCloudActive() ? loadCloudPhoto(id) : loadLocalImage(id)
+}
+
+export async function loadLocalImage(id: string | null | undefined): Promise<Blob | null> {
+  if (!id) return null
   const db: IDBDatabase = await openDB()
   return new Promise<Blob | null>((resolve, reject) => {
     const tx: IDBTransaction = db.transaction(STORE_NAME, 'readonly')
@@ -35,6 +43,7 @@ export async function loadImage(id: string | null | undefined): Promise<Blob | n
 }
 
 export async function deleteImage(id: string | null | undefined): Promise<void> {
+  if (isCloudActive()) return
   if (!id) return
   const db: IDBDatabase = await openDB()
   return new Promise<void>((resolve, reject) => {

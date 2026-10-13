@@ -18,6 +18,7 @@ export default function Feeling() {
   const addRecord = useStore((s) => s.addRecord)
   const updateRecord = useStore((s) => s.updateRecord)
   const showToast = useStore((s) => s.showToast)
+  const saving = useStore((s) => s.saving)
 
   const today = getToday()
 
@@ -35,9 +36,10 @@ export default function Feeling() {
 
   useEffect(() => {
     setContent(targetRecord?.content ?? '')
-  }, [targetRecord?.id, targetRecord?.content])
+  }, [editId])
 
-  function handleSave() {
+  async function handleSave() {
+    if (saving) return
     const trimmed = content.trim()
     if (!trimmed) {
       showToast('写点今天的感想再保存')
@@ -52,14 +54,16 @@ export default function Feeling() {
       content: trimmed,
     }
 
+    try {
     if (targetRecord) {
-      updateRecord(targetRecord.id, payload)
+      await updateRecord(targetRecord.id, payload)
       showToast('感想已更新')
     } else {
-      addRecord(payload)
+      await addRecord(payload)
       showToast('感想已保存')
     }
     navigate(-1)
+    } catch (error) { showToast(error instanceof Error ? error.message : '未保存，请重试') }
   }
 
   const heading = editId ? '编辑感想' : '今日感想'
@@ -76,7 +80,7 @@ export default function Feeling() {
           </svg>
         </button>
         <h1 className="text-lg font-semibold">{heading}</h1>
-        <button onClick={handleSave} className="font-medium px-2 py-1 text-theme-accent">保存</button>
+        <button onClick={handleSave} disabled={saving} className="font-medium px-2 py-1 text-theme-accent">保存</button>
       </div>
 
       <div className="px-4 pt-5 pb-10">
@@ -107,7 +111,7 @@ export default function Feeling() {
           </div>
         </div>
 
-        <button onClick={handleSave} className="btn-primary w-full mt-5">
+        <button onClick={handleSave} disabled={saving} className="btn-primary w-full mt-5">
           {targetRecord ? '更新感想' : '保存感想'}
         </button>
       </div>

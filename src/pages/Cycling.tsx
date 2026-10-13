@@ -29,6 +29,7 @@ function statusLabel(status: RideStatus): string {
 
 export default function Cycling() {
   const addRecord = useStore((s) => s.addRecord)
+  const saving = useStore((s) => s.saving)
   const records = useStore((s) => s.records)
   const showToast = useStore((s) => s.showToast)
 
@@ -222,7 +223,8 @@ export default function Cycling() {
     startLocationPreview()
   }
 
-  function finishRide() {
+  async function finishRide() {
+    if (saving) return
     const total = getTotalElapsedSec()
     accumulatedSecRef.current = total
     activeStartedAtRef.current = null
@@ -245,7 +247,9 @@ export default function Cycling() {
     const maxSpeed = Number(metrics.maxSpeed.toFixed(1))
     const ascentM = Math.round(metrics.ascentM)
 
-    addRecord({
+    setRideStatus('paused')
+    try {
+    await addRecord({
       type: 'exercise',
       exerciseCategory: 'cardio',
       exerciseType: '骑行',
@@ -271,6 +275,7 @@ export default function Cycling() {
 
     showToast('骑行已保存')
     discardRide()
+    } catch (error) { showToast(error instanceof Error ? error.message : '未保存，请重试') }
   }
 
   return (
@@ -331,12 +336,12 @@ export default function Cycling() {
           ) : status === 'recording' ? (
             <>
               <button onClick={pauseRide} className="btn-secondary">暂停</button>
-              <button onClick={finishRide} className="btn-primary">结束并保存</button>
+              <button onClick={finishRide} disabled={saving} className="btn-primary">结束并保存</button>
             </>
           ) : (
             <>
               <button onClick={resumeRide} className="btn-primary">继续</button>
-              <button onClick={finishRide} className="btn-secondary">保存</button>
+              <button onClick={finishRide} disabled={saving} className="btn-secondary">保存</button>
               <button onClick={discardRide} className="btn-danger col-span-2">放弃本次骑行</button>
             </>
           )}

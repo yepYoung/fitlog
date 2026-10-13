@@ -17,6 +17,7 @@ export default function ExerciseRecord() {
   const addRecord = useStore((s) => s.addRecord)
   const updateRecord = useStore((s) => s.updateRecord)
   const showToast = useStore((s) => s.showToast)
+  const saving = useStore((s) => s.saving)
   const commonStrength = useStore((s) => s.settings.commonStrength)
   const commonCardio = useStore((s) => s.settings.commonCardio)
   const exerciseDraft = useStore((s) => s.exerciseDraft)
@@ -80,7 +81,8 @@ export default function ExerciseRecord() {
     showToast(`已记录 ${minutes} 分钟`)
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (saving) return
     if (!exerciseType.trim()) {
       showToast('请选择运动类型')
       setErrorField('type')
@@ -135,13 +137,15 @@ export default function ExerciseRecord() {
       }
     }
 
-    if (editExercise && editId) { updateRecord(editId, data); showToast('已更新') }
+    try {
+    if (editExercise && editId) { await updateRecord(editId, data); showToast('已更新') }
     else {
-      addRecord(data)
+      await addRecord(data)
       clearExerciseDraft()
       showToast('已记录')
     }
     navigate(-1)
+    } catch (error) { showToast(error instanceof Error ? error.message : '未保存，请重试') }
   }
 
   const strengthGroups = commonStrength?.length > 0 && typeof commonStrength[0] === 'object'
@@ -159,7 +163,7 @@ export default function ExerciseRecord() {
           </svg>
         </button>
         <h1 className="text-lg font-semibold">{editExercise ? '编辑运动' : '记录运动'}</h1>
-        <button onClick={handleSave} className="font-medium px-2 py-1 text-theme-accent">保存</button>
+        <button onClick={handleSave} disabled={saving} className="font-medium px-2 py-1 text-theme-accent">保存</button>
       </div>
 
       <div className="px-4 space-y-5 pb-10">
@@ -234,7 +238,7 @@ export default function ExerciseRecord() {
             placeholder="感受、调整..." className="input-field" />
         </div>
 
-        <button onClick={handleSave} className="btn-primary w-full mt-4">
+        <button onClick={handleSave} disabled={saving} className="btn-primary w-full mt-4">
           {editExercise ? '更新记录' : '保存记录'}
         </button>
       </div>

@@ -4,6 +4,7 @@ import BottomNav from './components/BottomNav'
 import Toast from './components/Toast'
 import FloatingTimer from './components/FloatingTimer'
 import BackgroundDecor from './components/BackgroundDecor'
+import CloudGate from './components/CloudGate'
 
 const Home = lazy(() => import('./pages/Home'))
 const Feeling = lazy(() => import('./pages/Feeling'))
@@ -17,7 +18,6 @@ const Settings = lazy(() => import('./pages/Settings'))
 function MainLayout() {
   return (
     <div className="min-h-screen max-w-lg mx-auto relative">
-      <Toast />
       <main className="pb-20">
         <Suspense>
           <Outlet />
@@ -30,7 +30,8 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <Suspense>
+    <CloudGate><Suspense>
+      <Toast />
       <BackgroundDecor />
       <FloatingTimer />
       <Routes>
@@ -45,6 +46,6 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
-    </Suspense>
+    </Suspense></CloudGate>
   )
 }

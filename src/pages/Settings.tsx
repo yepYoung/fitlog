@@ -4,6 +4,9 @@ import { clearAllData, exportData } from '../utils/storage'
 import PageBackground from '../components/PageBackground'
 import type { StrengthGroup } from '../types'
 import type { ThemeMode } from '../utils/theme'
+import CloudSettings from '../components/CloudSettings'
+import { cloudRequest, loadCloudData } from '../utils/cloud'
+import { exportCloudData } from '../utils/cloudMigration'
 
 const THEME_OPTIONS: { key: ThemeMode; label: string }[] = [
   { key: 'auto', label: '跟随系统' },
@@ -106,21 +109,42 @@ export default function Settings() {
   const showToast = useStore((s) => s.showToast)
   const themeMode = useStore((s) => s.themeMode)
   const setThemeMode = useStore((s) => s.setThemeMode)
+  const cloud = useStore((s) => s.storageMode === 'cloud')
+  const saving = useStore((s) => s.saving)
+  const [dataBusy, setDataBusy] = useState(false)
 
-  function handleExport() {
-    const data = exportData()
+  async function handleExport() {
+    if (dataBusy || saving) return
+    setDataBusy(true)
+    try {
+    if (cloud) await useStore.getState().refreshCloud()
+    const current = useStore.getState()
+    const data = cloud ? await exportCloudData(current.records, current.settings) : exportData()
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a'); a.href = url
     a.download = `fitlog-export-${new Date().toISOString().slice(0, 10)}.json`
     a.click(); URL.revokeObjectURL(url)
     showToast('数据已导出')
+    } catch (error) { showToast(error instanceof Error ? error.message : '导出失败') }
+    finally { setDataBusy(false) }
   }
 
-  function handleClearAll() {
-    if (window.confirm('确定要清除所有数据吗？此操作不可恢复。'))
-      if (window.confirm('再次确认：真的要清除所有数据吗？'))
-        { clearAllData(); window.location.reload() }
+  async function handleClearAll() {
+    if (dataBusy || saving) return
+    if (!window.confirm(cloud ? '确定要清除云端全部记录、照片和设置吗？所有设备都会受影响，建议先导出备份。' : '确定要清除所有数据吗？此操作不可恢复。')) return
+    if (!window.confirm('再次确认：真的要清除所有数据吗？')) return
+    setDataBusy(true)
+    try {
+      if (cloud) {
+        useStore.setState({ saving: true })
+        await cloudRequest('data', { method: 'DELETE' })
+        useStore.getState().activateCloud(await loadCloudData())
+        useStore.getState().clearExerciseDraft()
+        showToast('云端数据已清除')
+      } else { clearAllData(); window.location.reload() }
+    } catch (error) { showToast(error instanceof Error ? error.message : '清除未完成，请重试') }
+    finally { setDataBusy(false); useStore.setState({ saving: false }) }
   }
 
   return (
@@ -128,6 +152,7 @@ export default function Settings() {
       <PageBackground src="/bg-settings.png" />
       <div className="px-4 pt-12 safe-top pb-8">
       <h1 className="text-2xl font-bold mb-6">设置</h1>
+       {cloud && <CloudSettings />}
 
       {/* Theme */}
       <div className="glass p-5 mb-4 animate-slide-up">
@@ -164,8 +189,8 @@ export default function Settings() {
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.15s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">数据管理</h2>
         <div className="space-y-2">
-          <button onClick={handleExport} className="btn-secondary w-full">导出数据 (JSON)</button>
-          <button onClick={handleClearAll} className="btn-danger w-full">清除所有数据</button>
+          <button onClick={handleExport} disabled={dataBusy || saving} className="btn-secondary w-full">{dataBusy ? '处理中…' : '导出数据（含照片）'}</button>
+          <button onClick={handleClearAll} disabled={dataBusy || saving} className="btn-danger w-full">{cloud ? '清除云端所有数据' : '清除所有数据'}</button>
         </div>
       </div>
       </div>

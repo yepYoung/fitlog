@@ -89,6 +89,7 @@ function formatExerciseDetail(record: ExerciseRecord) {
 function WeightCard() {
   const records = useStore((s) => s.records)
   const addRecord = useStore((s) => s.addRecord)
+  const saving = useStore((s) => s.saving)
   const showToast = useStore((s) => s.showToast)
   const today = getToday()
   const [input, setInput] = useState('')
@@ -106,15 +107,18 @@ function WeightCard() {
 
   const diff = todayWeight != null && yesterdayWeight != null ? todayWeight - yesterdayWeight : null
 
-  function handleSave() {
+  async function handleSave() {
+    if (saving) return
     const val = parseFloat(input)
     if (!val || val <= 0) { showToast('请输入有效体重'); return }
     const now = new Date()
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
-    addRecord({ type: 'weight', date: today, time: timeStr, weight: val, note: null } as Omit<WeightRecord, 'id' | 'createdAt'>)
+    try {
+    await addRecord({ type: 'weight', date: today, time: timeStr, weight: val, note: null } as Omit<WeightRecord, 'id' | 'createdAt'>)
     showToast('体重已记录')
     setInput('')
     setEditing(false)
+    } catch (error) { showToast(error instanceof Error ? error.message : '未保存，请重试') }
   }
 
   return (
@@ -136,7 +140,7 @@ function WeightCard() {
               placeholder={todayWeight?.toString() ?? '0.0'} className="input-field pr-10 text-center" autoFocus />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-theme-tertiary">kg</span>
           </div>
-          <button onClick={handleSave} className="btn-primary shrink-0 px-4 py-2">保存</button>
+          <button onClick={handleSave} disabled={saving} className="btn-primary shrink-0 px-4 py-2">保存</button>
           <button onClick={() => { setEditing(false); setInput('') }} className="p-2 shrink-0 text-theme-tertiary">&times;</button>
         </div>
       ) : (

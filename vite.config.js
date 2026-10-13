@@ -1,17 +1,21 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { devApiPlugin } from './server/dev-plugin.js'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   test: {
+    include: ['src/test/**/*.test.{ts,tsx}'],
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
   },
   plugins: [
+    devApiPlugin(loadEnv(mode, process.cwd(), '')),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: { navigateFallbackDenylist: [/^\/api\//] },
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'FitLog - 健身饮食记录',
@@ -43,4 +47,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+}))

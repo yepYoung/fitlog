@@ -7,11 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run && node --test server/api.test.js",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:api": "node --test server/api.test.js"
   },
   "dependencies": {
+    "@edgeone/pages-blob": "^0.0.18",
     "geolib": "^3.3.14",
     "maplibre-gl": "^5.24.0",
     "react": "^18.3.1",
