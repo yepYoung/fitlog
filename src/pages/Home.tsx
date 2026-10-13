@@ -40,7 +40,7 @@ function SummaryCard() {
         <div className="min-w-0 pl-4 border-l border-glass-divider">
           <span className="text-xs block mb-1 text-theme-tertiary">今日运动</span>
           <div className="text-4xl font-bold font-numeric leading-none mt-3 text-theme-accent">{exerciseMin}</div>
-          <div className="text-xs mt-2 text-theme-tertiary">/ {dailyExerciseGoal} 分钟</div>
+          <div className="text-xs mt-2 text-theme-tertiary">分钟</div>
           <div className="h-1.5 rounded-sm overflow-hidden bg-bar mt-3">
             <div className="h-full rounded-sm transition-all duration-300 ease-out"
               style={{ width: `${exPct}%`, background: 'var(--text-accent)' }} />

@@ -3,7 +3,7 @@ export type ThemeMode = 'auto' | 'dark' | 'light'
 const THEME_KEY: string = 'fitlog_theme'
 
 export function getStoredTheme(): ThemeMode {
-  return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'dark'
+  return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'light'
 }
 
 export function setStoredTheme(mode: ThemeMode): void {
