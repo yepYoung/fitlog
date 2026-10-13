@@ -156,7 +156,7 @@ export default function ExerciseRecord() {
     <div className="min-h-screen max-w-lg mx-auto">
       {/* Header */}
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3 safe-top flex items-center justify-between"
-        style={{ background: 'var(--header-bg)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', boxShadow: 'inset 0 -0.5px 0 var(--glass-border-light)' }}>
+        style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--glass-border-light)' }}>
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-theme-secondary">
           <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth={2}>
             <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -173,7 +173,7 @@ export default function ExerciseRecord() {
             <button key={c.key} onClick={() => { setCategory(c.key); setExerciseType('') }}
               className="flex-1 py-3 text-sm font-medium transition-all duration-200"
               style={category === c.key
-                ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff' }
+                ? { background: 'var(--action-bg)', color: 'var(--action-text)' }
                 : { color: 'var(--text-secondary)' }
               }>{c.label}</button>
           ))}
@@ -210,9 +210,9 @@ export default function ExerciseRecord() {
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-light text-theme-secondary">运动时长</label>
               <button onClick={() => setShowTimer(!showTimer)}
-                className="text-xs px-3 py-1 rounded-full transition-all duration-200"
+                className="text-xs px-3 py-1 rounded-lg transition-all duration-200"
                 style={showTimer
-                  ? { background: 'rgba(96,165,250,0.2)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }
+                  ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
                   : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
                 }>
                 {showTimer ? '关闭计时器' : '⏱ 计时器'}

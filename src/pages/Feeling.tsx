@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import useStore from '../store/useStore'
 import { getToday } from '../utils/constants'
-import PageBackground from '../components/PageBackground'
 import type { ReflectionRecord } from '../types'
 
 function formatTime(date: Date) {
@@ -70,10 +69,9 @@ export default function Feeling() {
 
   return (
     <>
-      <PageBackground src="/bg-feeling.png" />
       <div className="min-h-screen max-w-lg mx-auto">
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3 safe-top flex items-center justify-between"
-        style={{ background: 'var(--header-bg)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', boxShadow: 'inset 0 -0.5px 0 var(--glass-border-light)' }}>
+        style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--glass-border-light)' }}>
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-theme-secondary">
           <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth={2}>
             <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -88,7 +86,7 @@ export default function Feeling() {
           <div className="flex items-center gap-3 mb-4">
             <div
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-sm font-semibold"
-              style={{ background: 'rgba(96, 165, 250, 0.12)', color: 'var(--text-accent)', border: '1px solid rgba(96, 165, 250, 0.18)' }}
+              style={{ background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }}
             >
               F
             </div>

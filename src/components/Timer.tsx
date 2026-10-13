@@ -63,9 +63,9 @@ export default function Timer({ onSave }: TimerProps) {
           className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200"
           style={{
             background: timer.running
-              ? 'rgba(251,191,36,0.15)'
-              : 'linear-gradient(135deg, #60A5FA, #818CF8)',
-            border: timer.running ? '1px solid rgba(251,191,36,0.3)' : 'none',
+              ? 'var(--warning-soft)'
+              : 'var(--action-bg)',
+            border: timer.running ? '1px solid var(--warning-border)' : 'none',
           }}
         >
           {timer.running ? (
@@ -74,7 +74,7 @@ export default function Timer({ onSave }: TimerProps) {
               <rect x="14" y="4" width="4" height="16" rx="1" />
             </svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6">
+            <svg viewBox="0 0 24 24" fill="var(--action-text)" className="w-6 h-6">
               <polygon points="6,4 20,12 6,20" />
             </svg>
           )}
@@ -99,7 +99,7 @@ export default function Timer({ onSave }: TimerProps) {
           <button
             onClick={handleSave}
             className="h-14 px-5 rounded-2xl flex items-center gap-2 font-medium transition-all duration-200"
-            style={{ background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', color: 'var(--text-green)' }}
+            style={{ background: 'var(--green-soft)', border: '1px solid var(--green-border)', color: 'var(--text-green)' }}
           >
             <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth={2}>
               <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />

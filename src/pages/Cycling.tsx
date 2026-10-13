@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useStore from '../store/useStore'
-import PageBackground from '../components/PageBackground'
 import RouteMap from '../components/RouteMap'
 import { formatDate } from '../utils/constants'
 import { filterCyclingPoint, formatDistance, formatDuration, formatPaceSpeed, routeAscentM, routeDistanceKm } from '../utils/cycling'
@@ -280,15 +279,14 @@ export default function Cycling() {
 
   return (
     <>
-      <PageBackground src="/bg-stats.png" scrimFrom={0.18} scrimTo={0.55} />
       <div className="px-4 pt-12 safe-top pb-24">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">骑行地图</h1>
             <p className="mt-1 text-sm text-theme-tertiary">{statusLabel(status)}</p>
           </div>
-          <div className="rounded-full px-3 py-1 text-xs"
-            style={{ background: 'rgba(52,211,153,0.16)', color: 'var(--text-green)', border: '1px solid rgba(52,211,153,0.2)' }}>
+          <div className="rounded-lg px-3 py-1 text-xs"
+            style={{ background: 'var(--green-soft)', color: 'var(--text-green)', border: '1px solid var(--green-border)' }}>
             GPS
           </div>
         </div>
@@ -316,7 +314,7 @@ export default function Cycling() {
 
         {error && (
           <div className="mt-4 rounded-[16px] px-4 py-3 text-sm"
-            style={{ background: 'rgba(248,113,113,0.12)', color: 'var(--text-red)', border: '1px solid rgba(248,113,113,0.18)' }}>
+            style={{ background: 'var(--red-soft)', color: 'var(--text-red)', border: '1px solid var(--red-border)' }}>
             {error}
           </div>
         )}

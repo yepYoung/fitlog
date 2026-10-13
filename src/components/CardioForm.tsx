@@ -25,9 +25,9 @@ export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeC
         <div className="flex flex-wrap gap-2 mt-2">
           {commonCardio.map((ex) => (
             <button key={ex} onClick={() => onExerciseTypeChange(ex)}
-              className="px-3 py-1.5 rounded-full text-sm transition-all duration-200"
+              className="px-3 py-1.5 rounded-lg text-sm transition-all duration-200"
               style={exerciseType === ex
-                ? { background: 'rgba(96,165,250,0.2)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }
+                ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
                 : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
               }>{ex}</button>
           ))}
@@ -39,9 +39,9 @@ export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeC
         <div className="flex items-center justify-between mb-2">
           <label className="text-sm font-medium text-theme-secondary">运动时长</label>
           <button onClick={onToggleTimer}
-            className="text-xs px-3 py-1 rounded-full transition-all duration-200"
+            className="text-xs px-3 py-1 rounded-lg transition-all duration-200"
             style={showTimer
-              ? { background: 'rgba(96,165,250,0.2)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }
+              ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
               : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
             }>
             {showTimer ? '关闭计时器' : '⏱ 计时器'}

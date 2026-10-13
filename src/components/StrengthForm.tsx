@@ -36,9 +36,9 @@ export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerc
             <div className="flex flex-wrap gap-2">
               {g.items.map((ex) => (
                 <button key={ex} onClick={() => onExerciseTypeChange(ex)}
-                  className="px-3 py-1.5 rounded-full text-sm transition-all duration-200"
+                  className="px-3 py-1.5 rounded-lg text-sm transition-all duration-200"
                   style={exerciseType === ex
-                    ? { background: 'rgba(96,165,250,0.2)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }
+                    ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
                     : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
                   }>{ex}</button>
               ))}
@@ -68,7 +68,7 @@ export default function StrengthForm({ sets, onSetsChange, strengthGroups, exerc
             <button
               onClick={onCopyLast}
               className="w-full py-2 rounded-xl text-xs font-medium transition-all duration-200"
-              style={{ background: 'rgba(96,165,250,0.18)', color: 'var(--text-accent)', border: '1px solid rgba(96,165,250,0.3)' }}
+              style={{ background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }}
             >
               复制为本次组数
             </button>

@@ -210,7 +210,7 @@ export default function FoodRecord() {
   return (
     <div className="min-h-screen max-w-lg mx-auto">
       <div className="sticky top-0 z-10 px-4 pt-12 pb-3 safe-top flex items-center justify-between"
-        style={{ background: 'var(--header-bg)', backdropFilter: 'blur(28px) saturate(180%)', WebkitBackdropFilter: 'blur(28px) saturate(180%)', boxShadow: 'inset 0 -0.5px 0 var(--glass-border-light)' }}>
+        style={{ background: 'var(--header-bg)', borderBottom: '1px solid var(--glass-border-light)' }}>
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-theme-secondary">
           <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth={2}>
             <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -228,7 +228,7 @@ export default function FoodRecord() {
               <button key={meal.key} onClick={() => setCategory(meal.key as FoodRecordType['category'])}
                 className="py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
                 style={category === meal.key
-                  ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff' }
+                  ? { background: 'var(--action-bg)', color: 'var(--action-text)' }
                   : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
                 }>
                 <div className="text-base mb-0.5">{meal.icon}</div>{meal.label}
@@ -341,7 +341,7 @@ export default function FoodRecord() {
               <div className="absolute top-2 right-2 flex gap-2">
                 <button onClick={() => fileInputRef.current?.click()}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white"
-                  style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px) saturate(180%)', WebkitBackdropFilter: 'blur(12px) saturate(180%)', boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.2)' }}>
+                  style={{ background: '#121820' }}>
                   <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth={2}>
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
@@ -349,7 +349,7 @@ export default function FoodRecord() {
                 </button>
                 <button onClick={handleRemovePhoto}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white"
-                  style={{ background: 'rgba(220,38,38,0.5)', backdropFilter: 'blur(12px) saturate(180%)', WebkitBackdropFilter: 'blur(12px) saturate(180%)', boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15)' }}>&times;</button>
+                  style={{ background: '#BB2434' }}>&times;</button>
               </div>
             </div>
           ) : (

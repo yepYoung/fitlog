@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip } from 'recharts'
 import useStore from '../store/useStore'
 import { formatDate } from '../utils/constants'
-import PageBackground from '../components/PageBackground'
 import type { ExerciseRecord, WeightRecord } from '../types'
 
 interface StatCardProps {
@@ -16,7 +15,7 @@ function StatCard({ label, value, unit, color }: StatCardProps) {
   return (
     <div className="glass p-4 flex-1 min-w-0">
       <div className="text-xs mb-1 text-theme-tertiary">{label}</div>
-      <div className="text-2xl font-bold tracking-tight" style={{ color }}>{value}</div>
+      <div className="text-3xl font-numeric font-bold tracking-tight" style={{ color }}>{value}</div>
       <div className="text-xs mt-0.5 text-theme-tertiary">{unit}</div>
     </div>
   )
@@ -90,7 +89,6 @@ export default function Statistics() {
 
   return (
     <>
-      <PageBackground src="/bg-stats.png" />
       <div className="px-4 pt-12 safe-top pb-4">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-bold">统计</h1>
@@ -99,7 +97,7 @@ export default function Statistics() {
             <button key={r} onClick={() => setRange(r)}
               className="px-4 py-1.5 text-sm font-medium transition-all duration-200"
               style={range === r
-                ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff' }
+                ? { background: 'var(--action-bg)', color: 'var(--action-text)' }
                 : { color: 'var(--text-secondary)' }
               }>{r === 7 ? '近7天' : '近30天'}</button>
           ))}
@@ -123,13 +121,7 @@ export default function Statistics() {
             <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--glass-input)' }} />
             <ReferenceLine y={settings.dailyExerciseGoal} stroke="var(--text-tertiary)" strokeDasharray="4 4" />
-            <defs>
-              <linearGradient id="exGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#60A5FA" />
-                <stop offset="100%" stopColor="#34D399" />
-              </linearGradient>
-            </defs>
-            <Bar dataKey="minutes" fill="url(#exGrad)" radius={[4, 4, 0, 0]} maxBarSize={range <= 7 ? 32 : 14} />
+            <Bar dataKey="minutes" fill="var(--text-accent)" radius={[2, 2, 0, 0]} maxBarSize={range <= 7 ? 32 : 14} />
           </BarChart>
         </ResponsiveContainer>
         <div className="flex items-center gap-2 mt-2">
@@ -153,11 +145,11 @@ export default function Statistics() {
                 return (
                   <div className="glass px-3 py-2 text-xs" style={{ borderRadius: 12 }}>
                     <div className="text-theme-secondary">{label}</div>
-                    <div className="font-semibold" style={{ color: '#f472b6' }}>{payload[0].value} kg</div>
+                    <div className="font-semibold" style={{ color: 'var(--text-blue)' }}>{payload[0].value} kg</div>
                   </div>
                 )
               }} />
-              <Line type="monotone" dataKey="weight" stroke="#f472b6" strokeWidth={2} dot={{ fill: '#f472b6', r: 3 }} />
+              <Line type="monotone" dataKey="weight" stroke="var(--text-blue)" strokeWidth={2} dot={{ fill: 'var(--text-blue)', r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -176,7 +168,7 @@ export default function Statistics() {
                   <span className="text-xs w-16 truncate text-theme-secondary">{name}</span>
                   <div className="flex-1 h-5 rounded-md overflow-hidden bg-bar">
                     <div className="h-full rounded-md flex items-center pl-2 text-xs font-medium text-white transition-all duration-500"
-                      style={{ width: `${Math.max(pct, 15)}%`, background: 'linear-gradient(90deg, #60A5FA, #818CF8)' }}>
+                      style={{ width: `${Math.max(pct, 15)}%`, background: 'var(--action-bg)', color: 'var(--action-text)' }}>
                       {count}次
                     </div>
                   </div>

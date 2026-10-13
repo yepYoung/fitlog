@@ -5,7 +5,6 @@ import { getToday, getGreeting, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import { formatDistance } from '../utils/cycling'
 import SwipeToDelete from '../components/SwipeToDelete'
-import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
 import type { AppRecord, ExerciseRecord, FoodRecord, WeightRecord } from '../types'
 
@@ -29,36 +28,22 @@ function SummaryCard() {
   const exPct = dailyExerciseGoal > 0 ? Math.min((exerciseMin / dailyExerciseGoal) * 100, 100) : 0
 
   return (
-    <div className="glass glass-media p-5 animate-slide-up">
-      <div
-        className="glass-media__image"
-        style={{ backgroundImage: "url('/card-demo-desert.png')" }}
-      />
-      <div
-        className="glass-media__blur"
-        style={{ backgroundImage: "url('/card-demo-desert.png')" }}
-      />
-      <div className="glass-media__veil" />
-      <div className="glass-media__shine" />
-      <div className="glass-media__content flex gap-4">
+    <div className="glass training-summary p-5 animate-slide-up">
+      <div className="grid grid-cols-2">
         {/* Meals */}
-        <div className="flex-1">
+        <div className="min-w-0 pr-4">
           <span className="text-xs block mb-1 text-theme-tertiary">今日饮食</span>
-          <span className="text-3xl font-bold font-display">{totalCalories}</span>
-          <span className="text-sm ml-1 text-theme-tertiary">卡路里</span>
+          <div className="text-4xl font-bold font-numeric leading-none mt-3 text-theme-yellow">{totalCalories}</div>
+          <div className="text-xs mt-2 text-theme-tertiary">卡路里</div>
         </div>
-        {/* Divider */}
-        <div style={{ width: 1, background: 'var(--glass-divider)' }} />
         {/* Exercise */}
-        <div className="flex-1">
+        <div className="min-w-0 pl-4 border-l border-glass-divider">
           <span className="text-xs block mb-1 text-theme-tertiary">今日运动</span>
-          <div className="flex items-baseline gap-1 mb-2">
-            <span className="text-3xl font-bold font-display">{exerciseMin}</span>
-            <span className="text-sm text-theme-tertiary font-numeric">/ {dailyExerciseGoal} 分钟</span>
-          </div>
-          <div className="h-1.5 rounded-full overflow-hidden bg-bar">
-            <div className="h-full rounded-full transition-all duration-700 ease-out progress-glow"
-              style={{ width: `${exPct}%`, background: 'linear-gradient(90deg, #34D399, #60A5FA)' }} />
+          <div className="text-4xl font-bold font-numeric leading-none mt-3 text-theme-accent">{exerciseMin}</div>
+          <div className="text-xs mt-2 text-theme-tertiary">/ {dailyExerciseGoal} 分钟</div>
+          <div className="h-1.5 rounded-sm overflow-hidden bg-bar mt-3">
+            <div className="h-full rounded-sm transition-all duration-300 ease-out"
+              style={{ width: `${exPct}%`, background: 'var(--text-accent)' }} />
           </div>
         </div>
       </div>
@@ -227,7 +212,6 @@ export default function Home() {
 
   return (
     <>
-      <PageBackground src="/home-bg.png" scrimFrom={0.25} scrimTo={0.55} />
       <div className="px-4 pt-12 safe-top">
       <div className="mb-6 animate-slide-up">
         <div className="flex items-baseline justify-between gap-4">

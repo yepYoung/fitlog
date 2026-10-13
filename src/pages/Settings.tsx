@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import useStore from '../store/useStore'
 import { clearAllData, exportData } from '../utils/storage'
-import PageBackground from '../components/PageBackground'
 import type { StrengthGroup } from '../types'
 import type { ThemeMode } from '../utils/theme'
 import CloudSettings from '../components/CloudSettings'
@@ -33,7 +32,7 @@ function EditableChipList({ items, onChange, placeholder, activeColor = 'var(--t
     <div>
       <div className="flex flex-wrap gap-2 mb-2">
         {items.map((item) => (
-          <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm"
+          <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm"
             style={{ background: 'var(--chip-bg)', color: activeColor, border: '1px solid var(--chip-border)' }}>
             {item}
             <button onClick={() => handleRemove(item)} className="ml-0.5 opacity-60 hover:opacity-100">&times;</button>
@@ -82,7 +81,7 @@ function EditableGroupedChipList({ groups, onChange, activeColor = 'var(--text-a
           <span className="text-xs font-medium mb-1.5 block text-theme-tertiary">{g.group}</span>
           <div className="flex flex-wrap gap-2">
             {g.items.map((item) => (
-              <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm"
+              <span key={item} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm"
                 style={{ background: 'var(--chip-bg)', color: activeColor, border: '1px solid var(--chip-border)' }}>
                 {item}
                 <button onClick={() => handleRemove(g.group, item)} className="ml-0.5 opacity-60 hover:opacity-100">&times;</button>
@@ -149,7 +148,6 @@ export default function Settings() {
 
   return (
     <>
-      <PageBackground src="/bg-settings.png" />
       <div className="px-4 pt-12 safe-top pb-8">
       <h1 className="text-2xl font-bold mb-6">设置</h1>
        {cloud && <CloudSettings />}
@@ -162,7 +160,7 @@ export default function Settings() {
             <button key={opt.key} onClick={() => setThemeMode(opt.key)}
               className="flex-1 py-2.5 text-sm font-medium transition-all duration-200"
               style={themeMode === opt.key
-                ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff' }
+                ? { background: 'var(--action-bg)', color: 'var(--action-text)' }
                 : { color: 'var(--text-secondary)' }
               }>{opt.label}</button>
           ))}

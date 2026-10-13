@@ -3,7 +3,6 @@ import { Routes, Route, Outlet } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Toast from './components/Toast'
 import FloatingTimer from './components/FloatingTimer'
-import BackgroundDecor from './components/BackgroundDecor'
 import CloudGate from './components/CloudGate'
 
 const Home = lazy(() => import('./pages/Home'))
@@ -32,7 +31,6 @@ export default function App() {
   return (
     <CloudGate><Suspense>
       <Toast />
-      <BackgroundDecor />
       <FloatingTimer />
       <Routes>
         <Route path="/record/food" element={<FoodRecord />} />

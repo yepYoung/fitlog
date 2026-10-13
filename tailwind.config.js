@@ -10,16 +10,16 @@ export default {
       },
       colors: {
         accent: {
-          DEFAULT: '#60A5FA',
-          green: '#34D399',
-          yellow: '#FBBF24',
-          red: '#F87171',
+          DEFAULT: 'var(--text-accent)',
+          green: 'var(--text-green)',
+          yellow: 'var(--text-yellow)',
+          red: 'var(--text-red)',
         },
         glass: {
-          bg: 'rgba(255, 255, 255, 0.05)',
-          border: 'rgba(255, 255, 255, 0.12)',
-          hover: 'rgba(255, 255, 255, 0.08)',
-          input: 'rgba(255, 255, 255, 0.04)',
+          bg: 'var(--glass-bg)',
+          border: 'var(--glass-border)',
+          hover: 'var(--glass-bg-hover)',
+          input: 'var(--glass-input)',
         },
         theme: {
           primary: 'var(--text-primary)',
@@ -29,6 +29,7 @@ export default {
           green: 'var(--text-green)',
           yellow: 'var(--text-yellow)',
           red: 'var(--text-red)',
+          blue: 'var(--text-blue)',
         },
       },
       backgroundColor: {
@@ -44,22 +45,13 @@ export default {
         'glass-light': 'var(--glass-border-light)',
         'glass-divider': 'var(--glass-divider)',
       },
-      backdropBlur: {
-        glass: '24px',
-      },
-      backdropSaturate: {
-        glass: '1.8',
-      },
       boxShadow: {
-        'glass': '0 12px 40px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15)',
-        'glass-inset': 'inset 0 0 0 0.5px rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-        'glow': '0 0 20px rgba(96, 165, 250, 0.2)',
-        'glow-green': '0 0 12px rgba(52, 211, 153, 0.3)',
+        'glass': 'var(--shadow-glass)',
       },
       borderRadius: {
-        '2xl': '16px',
-        '3xl': '22px',
-        '4xl': '24px',
+        '2xl': '12px',
+        '3xl': '16px',
+        '4xl': '16px',
       },
     },
   },

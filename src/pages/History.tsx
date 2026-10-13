@@ -5,7 +5,6 @@ import { formatDate, getMealLabel } from '../utils/constants'
 import { getFoodDisplayName, getFoodItemCount, getFoodTotalCalories } from '../utils/food'
 import { formatDistance } from '../utils/cycling'
 import SwipeToDelete from '../components/SwipeToDelete'
-import PageBackground from '../components/PageBackground'
 import usePhotoURL from '../hooks/usePhotoURL'
 import type { AppRecord, ExerciseRecord, ReflectionRecord } from '../types'
 
@@ -43,12 +42,12 @@ function Calendar({ year, month, datesWithRecords, selectedDate, onSelectDate }:
             <button key={dateStr} onClick={() => onSelectDate(dateStr)}
               className="relative aspect-square flex flex-col items-center justify-center rounded-xl text-sm transition-all duration-200"
               style={
-                isSelected ? { background: 'linear-gradient(135deg, #60A5FA, #818CF8)', color: '#fff', fontWeight: 600 }
-                  : isToday ? { background: 'rgba(96,165,250,0.15)', color: 'var(--text-accent)', fontWeight: 600 }
+                isSelected ? { background: 'var(--action-bg)', color: 'var(--action-text)', fontWeight: 600 }
+                  : isToday ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', fontWeight: 600 }
                     : { color: 'var(--text-secondary)' }
               }>
               {day}
-              {hasRecord && <div className="absolute bottom-1 w-1 h-1 rounded-full" style={{ background: isSelected ? '#fff' : 'var(--text-accent)' }} />}
+              {hasRecord && <div className="absolute bottom-1 w-1 h-1 rounded-full" style={{ background: isSelected ? 'var(--action-text)' : 'var(--text-accent)' }} />}
             </button>
           )
         })}
@@ -96,7 +95,7 @@ function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
         {isFood && photoURL
           ? <img src={photoURL} alt="" className="w-9 h-9 rounded-lg object-cover" />
           : <div className="w-9 h-9 rounded-lg flex items-center justify-center text-base"
-              style={{ background: isFood ? 'var(--food-icon-bg)' : isReflection ? 'rgba(96, 165, 250, 0.1)' : 'var(--exercise-icon-bg)' }}>
+              style={{ background: isFood ? 'var(--food-icon-bg)' : isReflection ? 'var(--accent-soft)' : 'var(--exercise-icon-bg)' }}>
               {isFood ? '🍽️' : isReflection ? 'F' : exRecord?.exerciseCategory === 'strength' ? '🏋️' : '🏃'}
             </div>}
         <div className="flex-1 min-w-0">
@@ -147,7 +146,6 @@ export default function History() {
 
   return (
     <>
-      <PageBackground src="/bg-history.png" />
       <div className="px-4 pt-12 safe-top">
       <h1 className="text-2xl font-bold mb-4">历史记录</h1>
 

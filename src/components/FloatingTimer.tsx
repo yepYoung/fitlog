@@ -41,13 +41,11 @@ export default function FloatingTimer() {
   return (
     <button
       onClick={() => navigate('/record/exercise')}
-      className="fixed top-14 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 animate-slide-up"
+      className="fixed top-14 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-150 animate-slide-up"
       style={{
         background: 'var(--nav-bg)',
-        backdropFilter: 'blur(24px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(24px) saturate(180%)',
         border: '1px solid var(--glass-border)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(255,255,255,0.2)',
+        boxShadow: 'var(--shadow-glass)',
       }}
     >
       <span className={`w-2 h-2 rounded-full ${timer.running ? 'animate-pulse' : ''}`}

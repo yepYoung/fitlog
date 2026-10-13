@@ -3,7 +3,7 @@ export type ThemeMode = 'auto' | 'dark' | 'light'
 const THEME_KEY: string = 'fitlog_theme'
 
 export function getStoredTheme(): ThemeMode {
-  return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'auto'
+  return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'dark'
 }
 
 export function setStoredTheme(mode: ThemeMode): void {
@@ -23,6 +23,6 @@ export function applyTheme(mode: ThemeMode): void {
   // Update meta theme-color
   const meta: HTMLMetaElement | null = document.querySelector('meta[name="theme-color"]')
   if (meta) {
-    meta.content = resolved === 'light' ? '#F0F2F5' : '#0a0a1a'
+    meta.content = resolved === 'light' ? '#EDF0F2' : '#0B0E11'
   }
 }

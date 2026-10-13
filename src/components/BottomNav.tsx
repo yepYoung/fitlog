@@ -79,10 +79,7 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 safe-bottom"
       style={{
         background: 'var(--nav-bg)',
-        backdropFilter: 'blur(28px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(28px) saturate(180%)',
         borderTop: '1px solid var(--glass-border-light)',
-        boxShadow: 'inset 0 0.5px 0 var(--glass-highlight), 0 -4px 20px rgba(0,0,0,0.15)',
       }}>
       <div className="flex justify-around items-center h-14 max-w-lg mx-auto">
         {tabs.map((tab) => {
@@ -92,7 +89,8 @@ export default function BottomNav() {
             <button
               key={tab.key}
               onClick={() => navigate(tab.key)}
-              className="flex flex-col items-center gap-0.5 py-1 px-2 transition-all duration-200"
+              className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition-colors duration-150"
+              style={{ background: active ? 'var(--accent-soft)' : 'transparent', minHeight: 44 }}
             >
               {tab.icon(color)}
               <span className="text-xs transition-colors duration-200"

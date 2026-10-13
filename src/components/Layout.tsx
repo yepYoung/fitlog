@@ -4,7 +4,7 @@ import Toast from './Toast'
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-gray-50 max-w-lg mx-auto relative">
+    <div className="min-h-screen max-w-lg mx-auto relative">
       <Toast />
       <main className="pb-20">
         <Outlet />

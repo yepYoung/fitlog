@@ -320,7 +320,7 @@ export default function RouteMap({ points, currentPoint, recording = false, loca
   }, [points, recording])
 
   return (
-    <div className="relative h-[430px] overflow-hidden rounded-[22px] cycling-map-shell">
+    <div className="relative h-[430px] overflow-hidden cycling-map-shell">
       <div ref={containerRef} className="cycling-map h-full w-full" />
 
       <div className="pointer-events-none absolute left-4 top-4 right-4 flex items-start justify-between gap-3">
