@@ -249,20 +249,16 @@ export default function Home() {
       </div>
 
       {/* Food Records */}
-      <div className="mt-5 mb-4">
-        <h2 className="text-base font-semibold mb-3 text-theme-secondary">🍽️ 今日饮食</h2>
-        {foodRecords.length === 0 ? (
-          <div className="glass text-center py-8 text-theme-tertiary">
-            <p className="text-sm">还没有饮食记录</p>
-          </div>
-        ) : (
+      {foodRecords.length > 0 && (
+        <div className="mt-5 mb-4">
+          <h2 className="text-base font-semibold mb-3 text-theme-secondary">🍽️ 今日饮食</h2>
           <div className="glass overflow-hidden divide-y border-glass-divider">
             {foodRecords.map((r) => (
               <RecordItem key={r.id} record={r} onEdit={() => navigate(editUrl(r))} />
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
       </div>
     </>
   )
