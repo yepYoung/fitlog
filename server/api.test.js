@@ -128,3 +128,28 @@ test('storage failures are reported and do not leak provider credentials', async
   assert.equal(response.status, 503)
   assert.doesNotMatch(await response.text(), /secret-provider/)
 })
+
+test('EdgeOne parsed-body requests work behind HTTPS termination with secure cookies', async () => {
+  const f = fixture()
+  const handle = createApi(() => f.store, { secureCookies: true })
+  const json = { accessKey: key }
+  const request = new Request('http://fitlog.example/api/session', {
+    method: 'POST', headers: { Origin: 'https://fitlog.example', 'Sec-Fetch-Site': 'same-origin', 'X-Fitlog-Request': '1' },
+    body: JSON.stringify(json),
+  })
+  Object.defineProperty(request, 'body', { value: Promise.resolve(json) })
+  const login = await handle(request, { FITLOG_ACCESS_KEY: key })
+  assert.equal(login.status, 200)
+  assert.match(login.headers.get('set-cookie'), /; Secure/)
+  const cookie = login.headers.get('set-cookie').split(';')[0]
+  const photo = new Uint8Array([0xff, 0xd8, 0xff, 0x00, 0x01])
+  const upload = new Request('http://fitlog.example/api/photos/p', {
+    method: 'PUT', headers: { Cookie: cookie, 'X-Fitlog-Request': '1' }, body: photo,
+  })
+  Object.defineProperty(upload, 'body', { value: photo })
+  assert.equal((await handle(upload, { FITLOG_ACCESS_KEY: key })).status, 200)
+  assert.deepEqual(new Uint8Array(await f.store.get('photos/p')), photo)
+  assert.equal((await f.request('session', { method: 'POST', value: json, extra: { 'Sec-Fetch-Site': 'cross-site' } })).status, 403)
+  const preflight = new Request('http://fitlog.example/api/session', { method: 'OPTIONS', headers: { Origin: 'https://other.example', 'Access-Control-Request-Headers': 'x-fitlog-request' } })
+  assert.equal((await handle(preflight, { FITLOG_ACCESS_KEY: key })).status, 403)
+})

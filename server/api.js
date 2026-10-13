@@ -23,13 +23,19 @@ function authenticated(request, key) {
   return !extra && /^\d+$/.test(expiry) && Number(expiry) > Date.now() && Number(expiry) <= Date.now() + SESSION_SECONDS * 1000 + 60000 && typeof sig === 'string' && equal(sig, signature(expiry, key))
 }
 
-function cookie(request, value, age) {
-  return `${COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${new URL(request.url).protocol === 'https:' ? '; Secure' : ''}`
+function cookie(request, value, age, secureCookies) {
+  return `${COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secureCookies || new URL(request.url).protocol === 'https:' ? '; Secure' : ''}`
 }
 
 async function bytes(request, limit) {
   if (Number(request.headers.get('content-length')) > limit) throw new ApiError(413, '内容过大')
-  const reader = request.body?.getReader()
+  // EdgeOne exposes a parsed value at .body; the standard body methods still work.
+  if (typeof request.body?.getReader !== 'function') {
+    const data = new Uint8Array(await request.arrayBuffer())
+    if (data.byteLength > limit) throw new ApiError(413, '内容过大')
+    return data
+  }
+  const reader = request.body.getReader()
   if (!reader) return new Uint8Array()
   const chunks = []; let total = 0
   while (true) {
@@ -98,7 +104,7 @@ async function snapshot(store) {
 }
 
 /** Both the EdgeOne handler and local development use this authenticated API. */
-export function createApi(getStore) {
+export function createApi(getStore, { secureCookies = false } = {}) {
   return async function handle(request, env = {}) {
     try {
       const key = env.FITLOG_ACCESS_KEY
@@ -108,15 +114,21 @@ export function createApi(getStore) {
       const method = request.method
       if (!['GET', 'HEAD'].includes(method)) {
         const origin = request.headers.get('origin')
-        if (request.headers.get('X-Fitlog-Request') !== '1' || (origin && origin !== url.origin)) throw new ApiError(403, '请求来源无效')
+        // Browsers set this forbidden header using the public URL, even if a proxy
+        // passes an internal HTTP URL to the function. Cross-origin preflights
+        // remain rejected and we never emit Access-Control-Allow-Origin.
+        const site = request.headers.get('sec-fetch-site')
+        if (request.headers.get('X-Fitlog-Request') !== '1'
+          || (site && site !== 'same-origin' && site !== 'none')
+          || (origin && site !== 'same-origin' && origin !== url.origin)) throw new ApiError(403, '请求来源无效')
       }
       if (path === 'session' && method === 'POST') {
         const credentials = await body(request)
         if (typeof credentials?.accessKey !== 'string' || !equal(credentials.accessKey, key)) throw new ApiError(401, '访问口令不正确')
         const expiry = String(Date.now() + SESSION_SECONDS * 1000)
-        return json({ ok: true }, 200, { 'Set-Cookie': cookie(request, `${expiry}.${signature(expiry, key)}`, SESSION_SECONDS) })
+        return json({ ok: true }, 200, { 'Set-Cookie': cookie(request, `${expiry}.${signature(expiry, key)}`, SESSION_SECONDS, secureCookies) })
       }
-      if (path === 'session' && method === 'DELETE') return json({ ok: true }, 200, { 'Set-Cookie': cookie(request, '', 0) })
+      if (path === 'session' && method === 'DELETE') return json({ ok: true }, 200, { 'Set-Cookie': cookie(request, '', 0, secureCookies) })
       if (!authenticated(request, key)) throw new ApiError(401, '请先输入访问口令')
       if (path === 'session' && method === 'GET') return json({ ok: true })
       const store = getStore()
