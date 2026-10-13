@@ -167,6 +167,12 @@ export default function Settings() {
         </div>
       </div>
 
+      <div className="glass p-5 mb-4 animate-slide-up">
+        <h2 className="text-base font-semibold mb-4 text-theme-secondary">应用更新</h2>
+        <button disabled={dataBusy || saving} className="btn-secondary w-full"
+          onClick={() => window.location.assign(`/api/app-update${window.location.search}`)}>刷新应用版本</button>
+      </div>
+
       {/* Common Strength */}
       <div className="glass p-5 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
         <h2 className="text-base font-semibold mb-4 text-theme-secondary">常用力量动作</h2>

@@ -8,6 +8,28 @@ const ID = /^[a-zA-Z0-9_-]{1,100}$/
 const SETTING_KEYS = ['dailyExerciseGoal', 'commonFoods', 'commonStrength', 'commonCardio']
 const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' }
 
+// /api/ is excluded even by older service workers. A network navigation here
+// renews EdgeOne's preview cookies before replacing a cached application shell.
+// Unregistering the worker preserves localStorage, IndexedDB, photos and sessions.
+const appUpdateScript = `async function updateApp() {
+  try {
+    const registration = await navigator.serviceWorker?.getRegistration('/');
+    if (registration?.scope === new URL('/', location.href).href) await registration.unregister();
+    location.replace('/');
+  } catch {
+    document.getElementById('status').textContent = '请点击继续打开应用';
+    document.getElementById('continue').hidden = false;
+  }
+}
+updateApp();`
+const appUpdatePage = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>更新 FitLog</title><style>body{margin:0;padding:48px 24px;background:#0b0e11;color:#f4f7fa;font:600 18px system-ui,sans-serif}a{color:#d0ff3a}</style></head><body><p id="status">正在加载最新版本…</p><a id="continue" href="/" hidden>继续打开应用</a><script>${appUpdateScript}</script></body></html>`
+const appUpdateHeaders = {
+  ...headers,
+  'Content-Type': 'text/html; charset=utf-8',
+  'Referrer-Policy': 'no-referrer',
+  'Content-Security-Policy': `default-src 'none'; script-src 'sha256-${createHash('sha256').update(appUpdateScript).digest('base64')}'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`,
+}
+
 class ApiError extends Error {
   constructor(status, message) { super(message); this.status = status }
 }
@@ -107,11 +129,12 @@ async function snapshot(store) {
 export function createApi(getStore, { secureCookies = false } = {}) {
   return async function handle(request, env = {}) {
     try {
-      const key = env.FITLOG_ACCESS_KEY
-      if (typeof key !== 'string' || key.length < 24) throw new ApiError(503, '云端尚未配置访问口令')
       const url = new URL(request.url)
       const path = url.pathname.replace(/^\/api\/?/, '').replace(/\/$/, '')
       const method = request.method
+      if (path === 'app-update' && method === 'GET') return new Response(appUpdatePage, { headers: appUpdateHeaders })
+      const key = env.FITLOG_ACCESS_KEY
+      if (typeof key !== 'string' || key.length < 24) throw new ApiError(503, '云端尚未配置访问口令')
       if (!['GET', 'HEAD'].includes(method)) {
         const origin = request.headers.get('origin')
         // Browsers set this forbidden header using the public URL, even if a proxy

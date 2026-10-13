@@ -1,9 +1,32 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
+import { runInNewContext } from 'node:vm'
 import { createApi } from './api.js'
 
 const key = 'test-only-access-key-with-32-characters'
 const record = (id, content = '今天状态不错') => ({ id, type: 'reflection', date: '2026-10-13', time: '10:00', content, createdAt: '2026-10-13T02:00:00Z' })
+
+test('application refresh is public and never accesses private storage or clears user data', async () => {
+  const handle = createApi(() => { throw new Error('Private store must not be opened') })
+  const response = await handle(new Request('https://fitlog.example/api/app-update'), {})
+  assert.equal(response.status, 200)
+  assert.match(response.headers.get('content-type'), /^text\/html/)
+  assert.match(response.headers.get('cache-control'), /no-store/)
+  assert.match(response.headers.get('content-security-policy'), /script-src 'sha256-/)
+  assert.equal(response.headers.get('set-cookie'), null)
+  const html = await response.text()
+  const script = html.match(/<script>([\s\S]+?)<\/script>/)[1]
+  assert.ok(response.headers.get('content-security-policy').includes(`'sha256-${createHash('sha256').update(script).digest('base64')}'`))
+  const actions = []
+  await runInNewContext(script, {
+    URL,
+    navigator: { serviceWorker: { async getRegistration() { return { scope: 'https://fitlog.example/', async unregister() { actions.push('unregister') } } } } },
+    location: { href: 'https://fitlog.example/api/app-update', replace(path) { actions.push(path) } },
+  })
+  assert.deepEqual(actions, ['unregister', '/'])
+  assert.equal((await handle(new Request('https://fitlog.example/api/data'), { FITLOG_ACCESS_KEY: key })).status, 401)
+})
 
 function fixture() {
   const data = new Map()
