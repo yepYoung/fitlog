@@ -69,6 +69,19 @@ test('missing configuration, wrong key, and unauthenticated reads/writes fail cl
   assert.equal(f.data.size, 0)
 })
 
+test('six-character access keys work and rotating the key invalidates previous sessions', async () => {
+  const f = fixture()
+  const previousCookie = await f.login()
+  const env = { FITLOG_ACCESS_KEY: 'sixkey' }
+  assert.equal((await f.request('data', { env: { FITLOG_ACCESS_KEY: 'short' } })).status, 503)
+  assert.equal((await f.request('data', { env, cookie: previousCookie })).status, 401)
+  assert.equal((await f.request('session', { method: 'POST', env, value: { accessKey: key } })).status, 401)
+  const login = await f.request('session', { method: 'POST', env, value: { accessKey: 'sixkey' } })
+  assert.equal(login.status, 200)
+  const cookie = login.headers.get('set-cookie').split(';')[0]
+  assert.equal((await f.request('data', { env, cookie })).status, 200)
+})
+
 test('two devices share new records without overwriting each other; settings patch by field', async () => {
   const f = fixture(); const a = await f.login(); const b = await f.login()
   const results = await Promise.all([

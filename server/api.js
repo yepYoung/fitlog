@@ -134,7 +134,7 @@ export function createApi(getStore, { secureCookies = false } = {}) {
       const method = request.method
       if (path === 'app-update' && method === 'GET') return new Response(appUpdatePage, { headers: appUpdateHeaders })
       const key = env.FITLOG_ACCESS_KEY
-      if (typeof key !== 'string' || key.length < 24) throw new ApiError(503, '云端尚未配置访问口令')
+      if (typeof key !== 'string' || key.length < 6) throw new ApiError(503, '云端尚未配置访问口令')
       if (!['GET', 'HEAD'].includes(method)) {
         const origin = request.headers.get('origin')
         // Browsers set this forbidden header using the public URL, even if a proxy
