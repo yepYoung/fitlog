@@ -34,10 +34,11 @@ export default function App() {
       <Routes>
         <Route path="/record/food" element={<FoodRecord />} />
         <Route path="/record/exercise" element={<ExerciseRecord />} />
+        <Route path="/record/exercise/cycling" element={<Cycling />} />
+        <Route path="/cycling" element={<Navigate to="/record/exercise/cycling" replace />} />
         <Route element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="feeling" element={<Navigate to="/" replace />} />
-          <Route path="cycling" element={<Cycling />} />
           <Route path="history" element={<History />} />
           <Route path="stats" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />

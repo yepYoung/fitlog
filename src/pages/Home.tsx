@@ -206,7 +206,7 @@ export default function Home() {
 
   function editUrl(r: AppRecord) {
     if (r.type === 'food') return `/record/food?edit=${r.id}`
-    if (r.type === 'exercise' && r.cyclingRoute) return '/cycling'
+    if (r.type === 'exercise' && r.cyclingRoute) return '/record/exercise/cycling'
     return `/record/exercise?edit=${r.id}`
   }
 
@@ -229,9 +229,6 @@ export default function Home() {
         </button>
         <button onClick={() => navigate('/record/exercise')} className="flex-1 btn-secondary flex items-center justify-center gap-1.5 px-3 text-base whitespace-nowrap">
           <span className="text-lg">+</span> 运动
-        </button>
-        <button onClick={() => navigate('/cycling')} className="flex-1 btn-secondary flex items-center justify-center gap-1.5 px-3 text-base whitespace-nowrap">
-          <span className="text-lg">⌁</span> 骑行
         </button>
       </div>
 

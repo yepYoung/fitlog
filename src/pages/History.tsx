@@ -179,7 +179,7 @@ export default function History() {
                   onEdit={record.type === 'food' || record.type === 'exercise' ? () => navigate(
                     record.type === 'food'
                       ? `/record/food?edit=${record.id}`
-                      : record.cyclingRoute ? '/cycling' : `/record/exercise?edit=${record.id}`
+                      : record.cyclingRoute ? '/record/exercise/cycling' : `/record/exercise?edit=${record.id}`
                   ) : undefined}
                   onDelete={() => deleteRecord(record.id)} />
               ))}

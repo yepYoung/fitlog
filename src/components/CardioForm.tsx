@@ -12,10 +12,11 @@ interface CardioFormProps {
   showTimer: boolean
   onToggleTimer: () => void
   onTimerSave: (minutes: number) => void
+  onOpenCycling: () => void
   errorField?: string | null
 }
 
-export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeChange, durationMin, onDurationChange, cardioParams, onCardioParamChange, showTimer, onToggleTimer, onTimerSave, errorField }: CardioFormProps) {
+export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeChange, durationMin, onDurationChange, cardioParams, onCardioParamChange, showTimer, onToggleTimer, onTimerSave, onOpenCycling, errorField }: CardioFormProps) {
   const paramDefs = CARDIO_PARAMS[exerciseType] || []
 
   return (
@@ -33,6 +34,10 @@ export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeC
           ))}
         </div>
       )}
+
+      <button type="button" onClick={onOpenCycling} className="btn-secondary w-full my-3">
+        骑行地图
+      </button>
 
       {/* Timer toggle */}
       <div>

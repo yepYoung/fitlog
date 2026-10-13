@@ -200,7 +200,8 @@ export default function ExerciseRecord() {
               durationMin={durationMin} onDurationChange={setDurationMin}
               cardioParams={cardioParams} onCardioParamChange={(k, v) => setCardioParams({ ...cardioParams, [k]: v })}
               showTimer={showTimer} onToggleTimer={() => setShowTimer(!showTimer)}
-              onTimerSave={handleTimerSave} errorField={errorField} />
+              onTimerSave={handleTimerSave} onOpenCycling={() => navigate('/record/exercise/cycling')}
+              errorField={errorField} />
           )}
         </div>
 

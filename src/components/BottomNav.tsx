@@ -19,18 +19,6 @@ const tabs: NavTab[] = [
     ),
   },
   {
-    key: '/cycling',
-    label: '骑行',
-    icon: (c) => (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke={c} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="6" cy="17" r="3" />
-        <circle cx="18" cy="17" r="3" />
-        <path d="M8.5 17h3.2l2.1-5H10l-1.5 5z" />
-        <path d="M13.8 12l2.6 5M10 8h3M12 8l-2 4M15.5 7h2" />
-      </svg>
-    ),
-  },
-  {
     key: '/history',
     label: '历史',
     icon: (c) => (

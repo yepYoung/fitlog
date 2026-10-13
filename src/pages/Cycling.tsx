@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import RouteMap from '../components/RouteMap'
 import { formatDate } from '../utils/constants'
@@ -27,6 +28,7 @@ function statusLabel(status: RideStatus): string {
 }
 
 export default function Cycling() {
+  const navigate = useNavigate()
   const addRecord = useStore((s) => s.addRecord)
   const saving = useStore((s) => s.saving)
   const records = useStore((s) => s.records)
@@ -278,12 +280,19 @@ export default function Cycling() {
   }
 
   return (
-    <>
-      <div className="px-4 pt-12 safe-top pb-24">
+    <div className="min-h-screen max-w-lg mx-auto">
+      <div className="px-4 pt-12 safe-top pb-10">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">骑行地图</h1>
-            <p className="mt-1 text-sm text-theme-tertiary">{statusLabel(status)}</p>
+          <div className="flex items-start gap-2">
+            <button type="button" aria-label="返回" onClick={() => navigate(-1)} className="p-2 -ml-2 text-theme-secondary">
+              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth={2}>
+                <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold">骑行地图</h1>
+              <p className="mt-1 text-sm text-theme-tertiary">{statusLabel(status)}</p>
+            </div>
           </div>
           <div className="rounded-lg px-3 py-1 text-xs"
             style={{ background: 'var(--green-soft)', color: 'var(--text-green)', border: '1px solid var(--green-border)' }}>
@@ -366,6 +375,6 @@ export default function Cycling() {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
