@@ -231,7 +231,7 @@ export default function Home() {
       <div className="px-4 pt-12 safe-top">
       <div className="mb-6 animate-slide-up">
         <div className="flex items-baseline justify-between gap-4">
-          <h1 className="text-2xl font-bold shrink-0 font-display">{getGreeting()}</h1>
+          <h1 className="text-2xl font-bold shrink-0">{getGreeting()}</h1>
           <p className="text-sm text-theme-tertiary text-right">{dateStr} {weekdays[now.getDay()]}</p>
         </div>
       </div>
