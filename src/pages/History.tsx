@@ -76,7 +76,7 @@ function formatExDetail(r: ExerciseRecord) {
 
 interface HistoryItemProps {
   record: AppRecord
-  onEdit: () => void
+  onEdit?: () => void
   onDelete: () => void
 }
 
@@ -88,9 +88,10 @@ function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
   const exRecord = isExercise ? record as ExerciseRecord : null
   const reflectionRecord = isReflection ? record as ReflectionRecord : null
   const reflectionPreview = reflectionRecord?.content.replace(/\s+/g, ' ').trim() ?? ''
+  const Item = onEdit ? 'button' : 'div'
   return (
     <SwipeToDelete onDelete={onDelete}>
-      <button onClick={onEdit}
+      <Item onClick={onEdit}
         className="w-full text-left p-3 flex items-center gap-3 bg-item">
         {isFood && photoURL
           ? <img src={photoURL} alt="" className="w-9 h-9 rounded-lg object-cover" />
@@ -110,7 +111,7 @@ function HistoryItem({ record, onEdit, onDelete }: HistoryItemProps) {
                 : exRecord ? formatExDetail(exRecord) : ''}
           </span>
         </div>
-      </button>
+      </Item>
     </SwipeToDelete>
   )
 }
@@ -175,13 +176,11 @@ export default function History() {
             <div className="glass overflow-hidden divide-y border-glass-divider">
               {selectedRecords.map((record) => (
                 <HistoryItem key={record.id} record={record}
-                  onEdit={() => navigate(
+                  onEdit={record.type === 'food' || record.type === 'exercise' ? () => navigate(
                     record.type === 'food'
                       ? `/record/food?edit=${record.id}`
-                      : record.type === 'exercise'
-                        ? record.cyclingRoute ? '/cycling' : `/record/exercise?edit=${record.id}`
-                        : `/feeling?edit=${record.id}`
-                  )}
+                      : record.cyclingRoute ? '/cycling' : `/record/exercise?edit=${record.id}`
+                  ) : undefined}
                   onDelete={() => deleteRecord(record.id)} />
               ))}
             </div>

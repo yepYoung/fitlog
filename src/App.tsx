@@ -1,12 +1,11 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import Toast from './components/Toast'
 import FloatingTimer from './components/FloatingTimer'
 import CloudGate from './components/CloudGate'
 
 const Home = lazy(() => import('./pages/Home'))
-const Feeling = lazy(() => import('./pages/Feeling'))
 const FoodRecord = lazy(() => import('./pages/FoodRecord'))
 const ExerciseRecord = lazy(() => import('./pages/ExerciseRecord'))
 const Cycling = lazy(() => import('./pages/Cycling'))
@@ -37,7 +36,7 @@ export default function App() {
         <Route path="/record/exercise" element={<ExerciseRecord />} />
         <Route element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="feeling" element={<Feeling />} />
+          <Route path="feeling" element={<Navigate to="/" replace />} />
           <Route path="cycling" element={<Cycling />} />
           <Route path="history" element={<History />} />
           <Route path="stats" element={<Statistics />} />
