@@ -41,7 +41,7 @@ export default function ExerciseRecord() {
       ? Object.fromEntries(Object.entries(editExercise.cardioParams).map(([k, v]) => [k, String(v)]))
       : draft?.cardioParams ?? {}
   )
-  const [note, setNote] = useState(editExercise?.note ?? draft?.note ?? '')
+  const note = editExercise?.note ?? draft?.note ?? ''
   const globalTimer = useStore((s) => s.timer)
   const [showTimer, setShowTimer] = useState(draft?.showTimer ?? (globalTimer.running || globalTimer.base > 0))
   const [errorField, setErrorField] = useState<string | null>(null)
@@ -169,7 +169,7 @@ export default function ExerciseRecord() {
       <div className="px-4 space-y-5 pb-10">
         {/* Category Toggle */}
         <div className="flex rounded-xl overflow-hidden" style={{ background: 'var(--glass-input)', border: '1px solid var(--glass-border-light)' }}>
-          {([{ key: 'strength', label: '💪 力量训练' }, { key: 'cardio', label: '🏃 有氧运动' }] as const).map((c) => (
+          {([{ key: 'strength', label: '力量训练' }, { key: 'cardio', label: '有氧运动' }] as const).map((c) => (
             <button key={c.key} onClick={() => { setCategory(c.key); setExerciseType('') }}
               className="flex-1 py-3 text-sm font-medium transition-all duration-200"
               style={category === c.key
@@ -181,11 +181,10 @@ export default function ExerciseRecord() {
 
         {/* Exercise Type Input */}
         <div>
-          <label className="text-sm font-medium mb-2 block text-theme-secondary">
+          <label htmlFor="exercise-type" className="text-sm font-medium mb-2 block text-theme-secondary">
             {category === 'strength' ? '动作名称' : '运动类型'}
           </label>
-          <input type="text" value={exerciseType} onChange={(e) => setExerciseType(e.target.value)}
-            placeholder={category === 'strength' ? '如：卧推、深蹲' : '如：跑步、椭圆机'}
+          <input id="exercise-type" type="text" value={exerciseType} onChange={(e) => setExerciseType(e.target.value)}
             className={`input-field ${errorField === 'type' ? 'field-error' : ''}`} />
 
           {/* Category-specific form */}
@@ -216,7 +215,7 @@ export default function ExerciseRecord() {
                   ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
                   : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
                 }>
-                {showTimer ? '关闭计时器' : '⏱ 计时器'}
+                {showTimer ? '关闭计时器' : '计时器'}
               </button>
             </div>
             {showTimer ? (
@@ -231,13 +230,6 @@ export default function ExerciseRecord() {
             )}
           </div>
         )}
-
-        {/* Note */}
-        <div>
-          <label className="text-sm font-light mb-2 block text-theme-secondary">备注</label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)}
-            placeholder="感受、调整..." className="input-field" />
-        </div>
 
         <button onClick={handleSave} disabled={saving} className="btn-primary w-full mt-4">
           {editExercise ? '更新记录' : '保存记录'}

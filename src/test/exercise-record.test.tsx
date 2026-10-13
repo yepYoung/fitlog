@@ -33,29 +33,26 @@ describe('ExerciseRecord', () => {
   it('restores unsaved draft after remounting the page', () => {
     const firstView = renderExerciseRecord()
 
-    fireEvent.change(screen.getByPlaceholderText('如：卧推、深蹲'), { target: { value: '卧推' } })
+    fireEvent.change(screen.getByLabelText('动作名称'), { target: { value: '卧推' } })
     fireEvent.change(screen.getByPlaceholderText('重量'), { target: { value: '60' } })
     fireEvent.change(screen.getByPlaceholderText('次数'), { target: { value: '8' } })
-    fireEvent.change(screen.getByPlaceholderText('感受、调整...'), { target: { value: '第1组稳定' } })
 
     firstView.unmount()
 
     renderExerciseRecord()
 
-    expect(screen.getByPlaceholderText('如：卧推、深蹲')).toHaveValue('卧推')
+    expect(screen.getByLabelText('动作名称')).toHaveValue('卧推')
     expect(screen.getByPlaceholderText('重量')).toHaveValue(60)
     expect(screen.getByPlaceholderText('次数')).toHaveValue(8)
-    expect(screen.getByPlaceholderText('感受、调整...')).toHaveValue('第1组稳定')
   })
 
   it('opens cycling from cardio and restores the unsaved exercise form on return', () => {
     renderExerciseRecord()
     expect(screen.queryByRole('button', { name: '骑行地图' })).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: '🏃 有氧运动' }))
+    fireEvent.click(screen.getByRole('button', { name: '有氧运动' }))
     fireEvent.click(screen.getByRole('button', { name: '跑步' }))
     fireEvent.click(screen.getByRole('button', { name: '关闭计时器' }))
     fireEvent.change(screen.getByPlaceholderText('0'), { target: { value: '20' } })
-    fireEvent.change(screen.getByPlaceholderText('感受、调整...'), { target: { value: '有氧草稿' } })
 
     fireEvent.click(screen.getByRole('button', { name: '骑行地图' }))
     expect(screen.getByRole('heading', { name: '骑行地图' })).toBeInTheDocument()
@@ -63,9 +60,8 @@ describe('ExerciseRecord', () => {
     fireEvent.click(screen.getByRole('button', { name: '返回' }))
 
     expect(screen.getByRole('heading', { name: '记录运动' })).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('如：跑步、椭圆机')).toHaveValue('跑步')
+    expect(screen.getByLabelText('运动类型')).toHaveValue('跑步')
     expect(screen.getByPlaceholderText('0')).toHaveValue(20)
-    expect(screen.getByPlaceholderText('感受、调整...')).toHaveValue('有氧草稿')
     expect(screen.getByRole('button', { name: '骑行地图' })).toBeInTheDocument()
     expect(useStore.getState().records).toEqual([])
   })

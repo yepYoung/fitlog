@@ -49,7 +49,7 @@ export default function CardioForm({ exerciseType, commonCardio, onExerciseTypeC
               ? { background: 'var(--accent-soft)', color: 'var(--text-accent)', border: '1px solid var(--accent-border)' }
               : { background: 'var(--chip-bg)', color: 'var(--chip-text)', border: '1px solid var(--chip-border)' }
             }>
-            {showTimer ? '关闭计时器' : '⏱ 计时器'}
+            {showTimer ? '关闭计时器' : '计时器'}
           </button>
         </div>
         {showTimer ? (
