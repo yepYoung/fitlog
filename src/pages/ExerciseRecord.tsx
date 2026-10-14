@@ -231,9 +231,6 @@ export default function ExerciseRecord() {
           </div>
         )}
 
-        <button onClick={handleSave} disabled={saving} className="btn-primary w-full mt-4">
-          {editExercise ? '更新记录' : '保存记录'}
-        </button>
       </div>
     </div>
   )
